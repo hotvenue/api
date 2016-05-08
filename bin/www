@@ -12,6 +12,8 @@ const models = require('../models');
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+app.set('env', process.env.NODE_ENV || 'dev');
+
 /**
  * Create HTTP server.
  */
