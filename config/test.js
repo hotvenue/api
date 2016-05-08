@@ -7,6 +7,6 @@ const config = require('./default');
 module.exports = {
   database: {
     dialect: 'sqlite',
-    storage: path.join(config.folder.data, 'hotvenue.db')
+    storage: path.join(config.folder.data, 'test.db')
   }
 };

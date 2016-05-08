@@ -6,7 +6,7 @@ const express = require('express');
 
 const videoController = require('../controllers/video');
 
-const dataConfig = config.get('data');
+const dataConfig = config.get('folder');
 const upload = multer({ dest: dataConfig.upload });
 const router = module.exports = express.Router();
 

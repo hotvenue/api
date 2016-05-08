@@ -15,12 +15,13 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-const server = http.createServer(app);
+const server = module.exports = http.createServer(app);
 
 /**
  * Sync the database and then listen
  */
 models.sequelize.sync({ force: true }).then(function () {
+  debug('Finished build the db');
   server.listen(port);
 });
 
