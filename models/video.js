@@ -8,13 +8,9 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4
     },
 
-    url: {
+    extension: {
       type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-      validate: {
-        isUrl: true
-      }
+      allowNull: false
     },
 
     tmpCode: DataTypes.STRING

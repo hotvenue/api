@@ -10,8 +10,5 @@ const dataConfig = config.get('folder');
 const upload = multer({ dest: dataConfig.upload });
 const router = module.exports = express.Router();
 
-/* GET test */
-router.get('/', videoController.actionList);
-
 /* POST upload a video. */
 router.post('/', upload.single('video'), videoController.actionCreate);
