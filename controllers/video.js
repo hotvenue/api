@@ -16,6 +16,16 @@ module.exports = {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));
 
+    if (!videoFile.mimetype.match('/^video')) {
+      res.status(409);
+      res.json({
+        success: false,
+        message: 'the file you are trying to upload is not a video'
+      });
+
+      return;
+    }
+
     models.Video
       .create({
         extension: ext,
