@@ -7,7 +7,7 @@ const assert = require('assert');
 const supertest = require('supertest');
 
 module.exports = {
-  chai: chai.expect,
+  expect: chai.expect,
   assert: assert,
   server: null,
   request: supertest,

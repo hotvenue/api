@@ -31,7 +31,11 @@ const actions = module.exports = {
 
   actionRetrieve: function (req, res) {
     models.User
-      .findById(req.params.id)
+      .findById(req.params.id, {
+        include: [
+          { model: models.Video, include: [{ model: models.Location }]}
+        ]
+      })
       .then(function (user) {
         if (user) {
           res.json(user);
