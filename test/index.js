@@ -1,19 +1,18 @@
-'use strict';
-
 const fs = require('fs');
 const config = require('config');
 
 const common = require('./common');
+const server = require('../bin/www');
 
-describe('Test HotVenue', function () {
-  before(function (done) {
-    const server = common.server = require('../bin/www');
+describe('Test HotVenue', () => {
+  before((done) => {
+    common.server = server;
 
     server.on('listening', done);
   });
 
-  after(function (done) {
-    common.server.close(function () {
+  after((done) => {
+    common.server.close(() => {
       fs.unlink(config.get('database').storage, done);
     });
   });

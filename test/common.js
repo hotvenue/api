@@ -1,40 +1,34 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const chai = require('chai');
 const assert = require('assert');
 const supertest = require('supertest');
 
-module.exports = {
-  expect: chai.expect,
-  assert: assert,
-  server: null,
-  request: supertest,
-  importTests: importTests,
-  importTestSuite: importTestSuite
-};
-
-function importTests (name) {
-  describe(name, function () {
+function importTests(name) {
+  describe(name, () => {
     fs.readdirSync(path.join(__dirname, name))
-      .filter(function (filename) {
-        return filename.substr(-3) === '.js';
-      })
-      .forEach(function (filename) {
-        const filepath = path.join(__dirname, name, filename);
+        .filter((filename) => filename.substr(-3) === '.js')
+        .forEach((filename) => {
+          const filepath = path.join(__dirname, name, filename);
 
-        require(filepath);
-      });
+          require(filepath); // eslint-disable-line global-require
+        });
   });
 }
 
-function importTestSuite () {
+function importTestSuite() {
   fs.readdirSync(__dirname)
-    .filter(function (filename) {
-      return filename.substr(0, 1) !== '.' && filename.substr(-3) !== '.js';
-    })
-    .forEach(function (dirname) {
-      importTests(dirname);
-    });
+      .filter((filename) => filename.substr(0, 1) !== '.' && filename.substr(-3) !== '.js')
+      .forEach((dirname) => {
+        importTests(dirname);
+      });
 }
+
+module.exports = {
+  expect: chai.expect,
+  assert,
+  server: null,
+  request: supertest,
+  importTests,
+  importTestSuite,
+};

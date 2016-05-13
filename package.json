@@ -6,8 +6,10 @@
     "prestart": "npm install",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
+    "eslint": "eslint .",
+    "check": "npm run eslint",
     "pretest": "npm install",
-    "test": "NODE_ENV=test mocha --reporter spec --timeout 30s --bail test/index.js",
+    "test": "npm run check && NODE_ENV=test mocha --reporter spec --timeout 30s --bail test/index.js",
     "test:cov": "nyc npm test"
   },
   "dependencies": {
@@ -24,6 +26,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^2.9.0",
+    "eslint-config-airbnb": "^9.0.1",
     "mocha": "^2.4.5",
     "nodemon": "^1.9.2",
     "nyc": "^6.4.4",

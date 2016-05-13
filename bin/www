@@ -7,33 +7,6 @@ const app = require('../app');
 const models = require('../lib/models');
 
 /**
- * Get port from environment and store in Express.
- */
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-app.set('env', process.env.NODE_ENV || 'dev');
-
-/**
- * Create HTTP server.
- */
-const server = module.exports = http.createServer(app);
-
-/**
- * Sync the database and then listen
- */
-models.sequelize.sync({ force: true }).then(function () {
-  debug('Finished build the db');
-  server.listen(port);
-});
-
-/**
- * Set callbacks
- */
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
  * Normalize a port into a number, string, or false.
  */
 function normalizePort(val) {
@@ -53,25 +26,46 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Get port from environment and store in Express.
  */
-function onError(error) {
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+app.set('env', process.env.NODE_ENV || 'dev');
+
+/**
+ * Create HTTP server.
+ */
+const server = module.exports = http.createServer(app);
+
+/**
+ * Sync the database and then listen
+ */
+models.sequelize.sync({ force: true }).then(() => {
+  debug('Finished build the db');
+  server.listen(port);
+});
+
+/**
+ * Set callbacks
+ */
+server.on('error', (error) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+  const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
+      console.error(`${bind} requires elevated privileges`); // eslint-disable-line no-console
       process.exit(1);
 
       break;
 
     case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
+      console.error(`${bind} is already in use`); // eslint-disable-line no-console
       process.exit(1);
 
       break;
@@ -79,14 +73,11 @@ function onError(error) {
     default:
       throw error;
   }
-}
+});
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-function onListening() {
+server.on('listening', () => {
   const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
   debug(`Listening on ${bind}`);
-}
+});
