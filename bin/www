@@ -4,7 +4,7 @@ const http = require('http');
 const debug = require('debug')('hv:server');
 
 const app = require('../app');
-const models = require('../models');
+const models = require('../lib/models');
 
 /**
  * Get port from environment and store in Express.
