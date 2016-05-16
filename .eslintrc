@@ -1,4 +1,10 @@
 {
-    "extends": "airbnb",
-    "plugins": []
+  "extends": "airbnb",
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "plugins": [],
+  "rules": {
+    "strict": ["error", "global"]
+  }
 }
