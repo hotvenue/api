@@ -8,8 +8,9 @@
     "dev": "nodemon ./bin/www",
     "eslint": "eslint .",
     "check": "npm run eslint",
+    "mocha": "mocha --reporter spec --timeout 30s --bail test/index.js",
     "pretest": "npm install",
-    "test": "npm run check && NODE_ENV=test mocha --reporter spec --timeout 30s --bail test/index.js",
+    "test": "npm run check && NODE_ENV=test npm run mocha",
     "test:cov": "nyc npm test"
   },
   "dependencies": {
