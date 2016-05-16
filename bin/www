@@ -3,8 +3,8 @@
 const http = require('http');
 const debug = require('debug')('hv:server');
 
-const app = require('../app');
-const models = require('../lib/models');
+const app = require('../app/index');
+const models = require('../app/models');
 
 /**
  * Normalize a port into a number, string, or false.

@@ -4,8 +4,8 @@ const express = require('express');
 
 const app = module.exports = express();
 
-require('./lib/middlewares')(app);
-require('./lib/routes')(app);
+require('./middlewares/index')(app);
+require('./routes/index')(app);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
