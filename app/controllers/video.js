@@ -16,7 +16,7 @@ module.exports = {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));
 
-    if (!videoFile.mimetype.match('/^video')) {
+    if (!videoFile.mimetype.match(/^video\//)) {
       res.status(409);
       res.json({
         success: false,
