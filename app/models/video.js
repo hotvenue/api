@@ -19,6 +19,8 @@ module.exports = function video(sequelize, DataTypes) {
       associate: (models) => {
         Video.belongsTo(models.User);
         Video.belongsTo(models.Location);
+
+        Video.hasOne(models.TmpCode);
       },
     },
   });
