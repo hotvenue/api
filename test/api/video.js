@@ -21,6 +21,8 @@ describe('Video', () => {
         common.expect(res.body).to.have.property('updatedAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
+        common.video = res.body;
+
         done();
       });
   });
