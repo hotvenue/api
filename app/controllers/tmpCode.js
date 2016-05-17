@@ -10,7 +10,6 @@ module.exports = {
         res.json(tmpCode);
       })
       .catch((err) => {
-        console.log(err);
         res.status(409).json(err);
       });
   },

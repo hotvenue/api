@@ -35,7 +35,7 @@ describe('User', () => {
         common.expect(res.body).to.have.property('updatedAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
-        user = res.body;
+        common.user = user = res.body;
         user.videos = [];
 
         done();
@@ -73,6 +73,8 @@ describe('User', () => {
 
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('email').and.equal(email);
+
+        common.user.email = email;
 
         done();
       });

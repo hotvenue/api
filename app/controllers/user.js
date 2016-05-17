@@ -2,11 +2,12 @@
 
 const models = require('../models');
 
-const actions = module.exports = {
+module.exports = {
   actionList(req, res) {
     models.user.findAll({
       include: [
         { model: models.video, include: [{ model: models.location }] },
+        { model: models.tmpCode, include: [{ model: models.video }] },
       ],
     }).then((users) => {
       res.json(users);
@@ -52,18 +53,42 @@ const actions = module.exports = {
 
   actionUpdate(req, res) {
     models.user
-      .update(req.body, {
-        where: {
-          id: req.params.id,
-        },
-      })
-      .then((affected) => {
-        if (affected) {
-          actions.actionRetrieve(req, res);
-        } else {
+      .findById(req.params.id)
+      .then((user) => {
+        if (!user) {
           res.status(404).json({
             error: 'no users found',
           });
+
+          return false;
+        }
+
+        const user2edit = user;
+
+        ['email'].forEach((field) => {
+          if (req.body[field]) {
+            user2edit[field] = req.body[field];
+          }
+        });
+
+        if (req.body.tmpCode) {
+          user2edit.addTmpCode(req.body.tmpCode);
+        }
+
+        return user2edit.save();
+      })
+      .then((user) => {
+        if (user) {
+          return user.reload({
+            include: [{ model: models.tmpCode, include: [{ model: models.video }] }],
+          });
+        }
+
+        return false;
+      })
+      .then((user) => {
+        if (user) {
+          res.json(user);
         }
       })
       .catch((err) => {
