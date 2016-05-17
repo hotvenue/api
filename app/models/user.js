@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function user(sequelize, DataTypes) {
-  const User = sequelize.define('User', {
-    userId: {
+module.exports = function createUser(sequelize, DataTypes) {
+  const user = sequelize.define('user', {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -19,11 +19,11 @@ module.exports = function user(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        User.hasMany(models.Video);
-        User.hasMany(models.TmpCode);
+        user.hasMany(models.video);
+        user.hasMany(models.tmpCode);
       },
     },
   });
 
-  return User;
+  return user;
 };

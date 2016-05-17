@@ -29,14 +29,14 @@ describe('User', () => {
 
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('email').and.equal(email);
-        common.expect(res.body).to.have.property('userId').and.equal(1);
+        common.expect(res.body).to.have.property('id').and.equal(1);
         common.expect(res.body).to.have.property('createdAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
         user = res.body;
-        user.Videos = [];
+        user.videos = [];
 
         done();
       });
@@ -44,7 +44,7 @@ describe('User', () => {
 
   it('GET /user/:id should return the previously created user', (done) => {
     common.request(common.server)
-      .get(`/user/${user.userId}`)
+      .get(`/user/${user.id}`)
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -61,7 +61,7 @@ describe('User', () => {
     const email = 'hello@gmail.com';
 
     common.request(common.server)
-      .put(`/user/${user.userId}`)
+      .put(`/user/${user.id}`)
       .send({
         email,
       })

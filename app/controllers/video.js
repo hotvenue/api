@@ -26,7 +26,7 @@ module.exports = {
       return;
     }
 
-    models.Video
+    models.video
       .create({
         extension: ext,
         tmpCode: req.body.tmpCode,

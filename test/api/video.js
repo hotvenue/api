@@ -14,7 +14,7 @@ describe('Video', () => {
         }
 
         common.expect(res.body).to.be.a('object');
-        common.expect(res.body).to.have.property('videoId');
+        common.expect(res.body).to.have.property('id');
         common.expect(res.body).to.have.property('extension').and.equal('.mp4');
         common.expect(res.body).to.have.property('createdAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);

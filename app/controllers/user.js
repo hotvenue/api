@@ -4,9 +4,9 @@ const models = require('../models');
 
 const actions = module.exports = {
   actionList(req, res) {
-    models.User.findAll({
+    models.user.findAll({
       include: [
-        { model: models.Video, include: [{ model: models.Location }] },
+        { model: models.video, include: [{ model: models.location }] },
       ],
     }).then((users) => {
       res.json(users);
@@ -14,7 +14,7 @@ const actions = module.exports = {
   },
 
   actionCreate(req, res) {
-    models.User
+    models.user
       .findOrCreate({
         where: req.body,
       })
@@ -30,10 +30,10 @@ const actions = module.exports = {
   },
 
   actionRetrieve(req, res) {
-    models.User
+    models.user
       .findById(req.params.id, {
         include: [
-          { model: models.Video, include: [{ model: models.Location }] },
+          { model: models.video, include: [{ model: models.location }] },
         ],
       })
       .then((user) => {
@@ -51,10 +51,10 @@ const actions = module.exports = {
   },
 
   actionUpdate(req, res) {
-    models.User
+    models.user
       .update(req.body, {
         where: {
-          userId: req.params.id,
+          id: req.params.id,
         },
       })
       .then((affected) => {

@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function location(sequelize, DataTypes) {
-  const Location = sequelize.define('Location', {
-    locationId: {
+module.exports = function createLocation(sequelize, DataTypes) {
+  const location = sequelize.define('location', {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -27,10 +27,10 @@ module.exports = function location(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        Location.hasMany(models.Video);
+        location.hasMany(models.video);
       },
     },
   });
 
-  return Location;
+  return location;
 };

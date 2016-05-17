@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function video(sequelize, DataTypes) {
-  const Video = sequelize.define('Video', {
-    videoId: {
+module.exports = function createVideo(sequelize, DataTypes) {
+  const video = sequelize.define('video', {
+    id: {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
@@ -12,18 +12,16 @@ module.exports = function video(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-
-    tmpCode: DataTypes.STRING,
   }, {
     classMethods: {
       associate: (models) => {
-        Video.belongsTo(models.User);
-        Video.belongsTo(models.Location);
+        video.belongsTo(models.user);
+        video.belongsTo(models.location);
 
-        Video.hasOne(models.TmpCode);
+        video.hasOne(models.tmpCode);
       },
     },
   });
 
-  return Video;
+  return video;
 };

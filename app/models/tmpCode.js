@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function video(sequelize, DataTypes) {
-  const TmpCode = sequelize.define('TmpCode', {
-    tmpCode: {
+module.exports = function createTmpCode(sequelize, DataTypes) {
+  const tmpCode = sequelize.define('tmpCode', {
+    id: {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
@@ -10,11 +10,11 @@ module.exports = function video(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        TmpCode.belongsTo(models.User);
-        TmpCode.belongsTo(models.Video);
+        tmpCode.belongsTo(models.user);
+        tmpCode.belongsTo(models.video);
       },
     },
   });
 
-  return TmpCode;
+  return tmpCode;
 };
