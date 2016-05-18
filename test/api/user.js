@@ -24,7 +24,9 @@ describe('User', () => {
       .expect(200)
       .end((err, res) => {
         if (err) {
-          return done(err);
+          done(err);
+
+          return;
         }
 
         common.expect(res.body).to.be.a('object');
@@ -48,7 +50,9 @@ describe('User', () => {
       .expect(200)
       .end((err, res) => {
         if (err) {
-          return done(err);
+          done(err);
+
+          return;
         }
 
         common.expect(res.body).to.be.a('object').and.deep.equal(user);
@@ -68,7 +72,9 @@ describe('User', () => {
       .expect(200)
       .end((err, res) => {
         if (err) {
-          return done(err);
+          done(err);
+
+          return;
         }
 
         common.expect(res.body).to.be.a('object');

@@ -12,7 +12,9 @@ describe('TmpCode in User and Video', () => {
       .expect(200)
       .end((err, res) => {
         if (err) {
-          return done(err);
+          done(err);
+
+          return;
         }
 
         common.expect(res.body).to.be.a('object');
@@ -33,6 +35,8 @@ describe('TmpCode in User and Video', () => {
       .end((err, res) => {
         if (err) {
           done(err);
+
+          return;
         }
 
         common.expect(res.body).to.be.a('object');
