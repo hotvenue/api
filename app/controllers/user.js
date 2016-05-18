@@ -52,6 +52,8 @@ module.exports = {
   },
 
   actionUpdate(req, res) {
+    let theUser;
+
     models.user
       .findById(req.params.id)
       .then((user) => {
@@ -71,15 +73,20 @@ module.exports = {
           }
         });
 
-        if (req.body.tmpCode) {
-          user2edit.addTmpCode(req.body.tmpCode);
-        }
-
         return user2edit.save();
       })
       .then((user) => {
-        if (user) {
-          return user.reload({
+        theUser = user;
+
+        if (req.body.tmpCode) {
+          return user.addTmpCode(req.body.tmpCode);
+        }
+
+        return user;
+      })
+      .then((tmpCode) => {
+        if (tmpCode) {
+          return theUser.reload({
             include: [{ model: models.tmpCode, include: [{ model: models.video }] }],
           });
         }
