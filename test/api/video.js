@@ -10,7 +10,7 @@ describe('Video', () => {
       .expect(200)
       .end((err, res) => {
         if (err) {
-          done(err);
+          return done(err);
         }
 
         common.expect(res.body).to.be.a('object');
