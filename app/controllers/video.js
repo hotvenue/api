@@ -5,7 +5,7 @@ const path = require('path');
 
 const models = require('../models');
 
-module.exports = {
+const actions = module.exports = {
   actionCreate(req, res) {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));
@@ -61,7 +61,8 @@ module.exports = {
         theVideo = video;
 
         if (req.body.tmpCode) {
-          return video.setTmpCode(req.body.tmpCode);
+          return video.setTmpCode(req.body.tmpCode)
+            .then(actions.checkVideoUser(video));
         }
 
         return video;
@@ -69,7 +70,10 @@ module.exports = {
       .then((tmpCode) => {
         if (tmpCode) {
           return theVideo.reload({
-            include: [{ model: models.tmpCode, include: [{ model: models.video }] }],
+            include: [
+              { model: models.tmpCode, include: [{ model: models.video }] },
+              { model: models.user },
+            ],
           });
         }
 
@@ -83,5 +87,28 @@ module.exports = {
       .catch((err) => {
         res.status(409).json(err);
       });
+  },
+
+  checkVideoUser(video) {
+    return (tmpCode) =>
+      models.video
+        .find({
+          where: {
+            id: video.id,
+          },
+          include: [{
+            model: models.tmpCode,
+            where: { id: tmpCode.id },
+            include: [{ model: models.user }],
+          }],
+        })
+        .then((videoWithTmpCode) => {
+          if (videoWithTmpCode.tmpCode && videoWithTmpCode.tmpCode.user) {
+            return video.setUser(videoWithTmpCode.tmpCode.user)
+              .then(() => tmpCode);
+          }
+
+          return tmpCode;
+        });
   },
 };

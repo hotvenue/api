@@ -2,7 +2,7 @@
 
 const models = require('../models');
 
-module.exports = {
+const actions = module.exports = {
   actionList(req, res) {
     models.user.findAll({
       include: [
@@ -52,8 +52,6 @@ module.exports = {
   },
 
   actionUpdate(req, res) {
-    let theUser;
-
     models.user
       .findById(req.params.id)
       .then((user) => {
@@ -76,18 +74,20 @@ module.exports = {
         return user2edit.save();
       })
       .then((user) => {
-        theUser = user;
-
         if (req.body.tmpCode) {
-          return user.addTmpCode(req.body.tmpCode);
+          return user.addTmpCode(req.body.tmpCode)
+            .then(actions.checkUserVideo(req.body.tmpCode));
         }
 
         return user;
       })
-      .then((tmpCode) => {
-        if (tmpCode) {
-          return theUser.reload({
-            include: [{ model: models.tmpCode, include: [{ model: models.video }] }],
+      .then((user) => {
+        if (user) {
+          return user.reload({
+            include: [
+              { model: models.tmpCode, include: [{ model: models.video }] },
+              { model: models.video },
+            ],
           });
         }
 
@@ -96,10 +96,34 @@ module.exports = {
       .then((user) => {
         if (user) {
           res.json(user);
+        } else {
+          res.status(404);
         }
       })
       .catch((err) => {
         res.status(409).json(err);
       });
+  },
+
+  checkUserVideo(tmpCode) {
+    return (user) =>
+      models.user
+        .find({
+          where: {
+            id: user.id,
+          },
+          include: [{
+            model: models.tmpCode,
+            where: { id: tmpCode },
+            include: [{ model: models.video }],
+          }],
+        })
+        .then((userWithTmpCode) => {
+          if (userWithTmpCode.tmpCodes && userWithTmpCode.tmpCodes[0].video) {
+            return user.addVideo(userWithTmpCode.tmpCodes[0].video.id);
+          }
+
+          return userWithTmpCode || user;
+        });
   },
 };
