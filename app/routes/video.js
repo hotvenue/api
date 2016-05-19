@@ -11,6 +11,11 @@ const upload = multer({ dest: dataConfig.upload });
 const router = module.exports = express.Router(); // eslint-disable-line new-cap
 
 /**
+ * List
+ */
+router.get('/', videoController.actionList);
+
+/**
  * Create (with upload)
  */
 router.post('/', upload.single('video'), videoController.actionCreate);

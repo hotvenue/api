@@ -6,6 +6,25 @@ const path = require('path');
 const models = require('../models');
 
 const actions = module.exports = {
+  actionList(req, res) {
+    models.video
+      .findAll({
+        offset: 0,
+        limit: 10,
+
+        order: [
+          ['createdAt', 'DESC'],
+        ],
+      })
+      .then((videos) => {
+        res.json(videos);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(409).json(err);
+      });
+  },
+
   actionCreate(req, res) {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));

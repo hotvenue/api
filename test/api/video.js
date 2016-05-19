@@ -36,4 +36,21 @@ describe('Video', () => {
       .expect(409)
       .end(done);
   });
+
+  it('GET /video should get the list of videos (max: 10)', (done) => {
+    common.request(common.server)
+      .get('/video')
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+
+          return;
+        }
+
+        common.expect(res.body).to.be.a('array').and.have.length(1);
+
+        done();
+      });
+  });
 });
