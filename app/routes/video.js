@@ -12,6 +12,9 @@ const router = module.exports = express.Router(); // eslint-disable-line new-cap
 
 /**
  * List
+ * Params:
+ * - offset int [0]
+ * - limit  int [10]
  */
 router.get('/', videoController.actionList);
 
