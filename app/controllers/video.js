@@ -20,7 +20,6 @@ const actions = module.exports = {
         res.json(videos);
       })
       .catch((err) => {
-        console.error(err);
         res.status(409).json(err);
       });
   },
