@@ -53,4 +53,12 @@ describe('Video', () => {
         done();
       });
   });
+
+  it('GET /video?offset=1 should get no videos', (done) => {
+    common.request(common.server)
+      .get('/video?offset=1')
+      .expect(200)
+      .expect([])
+      .end(done);
+  });
 });

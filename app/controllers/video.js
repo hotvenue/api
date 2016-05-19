@@ -7,10 +7,15 @@ const models = require('../models');
 
 const actions = module.exports = {
   actionList(req, res) {
+    const query = req.query;
+
+    const offset = query.offset || 0;
+    const limit = query.limit || 10;
+
     models.video
       .findAll({
-        offset: 0,
-        limit: 10,
+        offset,
+        limit,
 
         order: [
           ['createdAt', 'DESC'],
