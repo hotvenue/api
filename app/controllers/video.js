@@ -49,8 +49,19 @@ const actions = module.exports = {
         tmpCode: req.body.tmpCode,
       })
       .then((video) => {
-        fs.rename(videoFile.path,
-          path.join(videoFile.destination, video.videoId + video.extension));
+        const oldVideoPath = videoFile.path;
+        const newVideoPath = path.join(videoFile.destination, video.id + video.extension);
+
+        fs.rename(oldVideoPath,
+          newVideoPath, (err) => {
+            if (err) {
+              console.error(err);
+
+              return;
+            }
+
+            fs.unlink(oldVideoPath);
+          });
 
         res.json(video);
       });
