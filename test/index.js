@@ -4,19 +4,15 @@ const fs = require('fs');
 const config = require('config');
 
 const common = require('./common');
-const server = require('../bin/www');
 
 describe('Test HotVenue', () => {
   before((done) => {
-    common.server = server;
-
-    server.on('listening', done);
+    fs.unlink(config.get('database').storage, done);
   });
 
-  after((done) => {
-    common.server.close(() => {
-      fs.unlink(config.get('database').storage, done);
-    });
+  before((done) => {
+    common.server = require('../bin/www'); // eslint-disable-line global-require
+    common.server.on('listening', done);
   });
 
   common.importTestSuite();
