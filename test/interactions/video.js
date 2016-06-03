@@ -6,7 +6,6 @@ const Ffmpeg = require('fluent-ffmpeg');
 
 const common = require('../common');
 const video = require('../../app/libraries/video');
-// const common = require('../common');
 
 describe('Ffmpeg', () => {
   it('should loop the video', (done) => {
