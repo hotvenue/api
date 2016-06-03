@@ -56,11 +56,9 @@ const actions = module.exports = {
           newVideoPath, (err) => {
             if (err) {
               console.error(err);
-
-              return;
             }
 
-            fs.unlink(oldVideoPath);
+            // fs.unlink(oldVideoPath);
           });
 
         res.json(video);
