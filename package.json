@@ -23,6 +23,7 @@
     "fluent-ffmpeg": "^2.1.0",
     "morgan": "~1.6.1",
     "multer": "^1.1.0",
+    "mysql": "^2.10.2",
     "sequelize": "^3.23.0",
     "sqlite3": "^3.1.3"
   },
