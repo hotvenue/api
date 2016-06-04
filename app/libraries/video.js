@@ -105,26 +105,21 @@ Ffmpeg.setFfprobePath(config.path.ffprobe);
   chapters: []
 }
 
+ 'overlay=5:H-h-5:format=rgb,format=yuv420p',
+
  */
 
 module.exports = {
-  repeat(videoInput, videoOutput, times, watermark, done) {
+  loop(videoInput, videoOutput, times, done) {
     const videoCmd = new Ffmpeg();
 
     for (let i = 0; i < times; ++i) {
       videoCmd.input(videoInput);
     }
 
-    if (typeof watermark === 'function') {
-      done = watermark; // eslint-disable-line no-param-reassign
-      watermark = null; // eslint-disable-line no-param-reassign
-    }
-
     videoCmd
-      .input(watermark)
       .complexFilter([
         `concat=n=${times}:v=1:a=1`,
-        'overlay=5:H-h-5:format=rgb,format=yuv420p',
       ])
       .output(videoOutput)
       .on('start', (command) => {

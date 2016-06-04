@@ -1,6 +1,6 @@
 'use strict';
 
-// const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const Ffmpeg = require('fluent-ffmpeg');
 
@@ -9,12 +9,11 @@ const video = require('../../app/libraries/video');
 
 describe('Ffmpeg', () => {
   it('should loop the video', (done) => {
-    const watermarkPath = path.join(__dirname, '../assets/watermark.png');
     const inputVideoPath = path.join(__dirname, '../assets/sample-video.mp4');
     const outputVideoPath = inputVideoPath.replace('sample', 'sample2');
     const times = 4;
 
-    video.repeat(inputVideoPath, outputVideoPath, times, watermarkPath, () => {
+    video.loop(inputVideoPath, outputVideoPath, times, () => {
       Ffmpeg.ffprobe(inputVideoPath, (errIn, metadataIn) => {
         if (errIn) {
           done(errIn);
@@ -35,8 +34,7 @@ describe('Ffmpeg', () => {
 
           common.expect(Math.round(outputDuration)).to.equal(Math.round(inputDuration * times));
 
-          // fs.unlink(outputVideoPath, done);
-          done();
+          fs.unlink(outputVideoPath, done);
         });
       });
     });
