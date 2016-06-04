@@ -11,6 +11,7 @@
     sudo apt-get install ffmpeg -y
     
     # Clone the repo
+    sudo apt-get install git -y
     git clone https://bitbucket.org/spotview/server.git spotvenue-server
     npm run start:production
     
