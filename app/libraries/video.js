@@ -105,8 +105,6 @@ Ffmpeg.setFfprobePath(config.path.ffprobe);
   chapters: []
 }
 
- 'overlay=5:H-h-5:format=rgb,format=yuv420p',
-
  */
 
 module.exports = {
@@ -120,6 +118,21 @@ module.exports = {
     videoCmd
       .complexFilter([
         `concat=n=${times}:v=1:a=1`,
+      ])
+      .output(videoOutput)
+      .on('error', done)
+      .on('end', done)
+      .run();
+  },
+
+  watermark(videoInput, videoOutput, watermark, position, done) {
+    const videoCmd = new Ffmpeg();
+
+    videoCmd
+      .input(videoInput)
+      .input(watermark)
+      .complexFilter([
+        `overlay=${position}`, // :format=rgb,format=yuv420p
       ])
       .output(videoOutput)
       .on('start', (command) => {
