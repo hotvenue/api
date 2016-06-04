@@ -5,6 +5,7 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node ./bin/www",
+    "start:production": "NODE_ENV=production npm start",
     "dev": "nodemon ./bin/www",
     "eslint": "eslint .",
     "check": "npm run eslint",
