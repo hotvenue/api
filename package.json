@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "npm install",
     "start": "node ./bin/www",
-    "start:production": "NODE_ENV=production npm start",
+    "start:production": "npm run prestart && pm2 startOrReload config/pm2/production.json",
     "dev": "nodemon ./bin/www",
     "eslint": "eslint .",
     "check": "npm run eslint",
