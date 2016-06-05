@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const cloud = require('../libraries/cloud');
 const models = require('../models');
 
 const actions = module.exports = {
@@ -50,16 +51,29 @@ const actions = module.exports = {
       })
       .then((video) => {
         const oldVideoPath = videoFile.path;
-        const newVideoPath = path.join(videoFile.destination, video.id + video.extension);
 
-        fs.rename(oldVideoPath,
-          newVideoPath, (err) => {
+        if (process.env.NODE_ENV === 'test') {
+          const newVideoPath = path.join(videoFile.destination, video.id + video.extension);
+
+          fs.rename(oldVideoPath,
+            newVideoPath, (err) => {
+              if (err) {
+                console.error(err);
+              }
+
+              fs.unlink(oldVideoPath);
+            });
+        } else {
+          const newVideoPath = `video/original/${video.id}${video.extension}`;
+
+          cloud.upload(oldVideoPath, newVideoPath, (err/* , data */) => {
             if (err) {
               console.error(err);
             }
 
-            // fs.unlink(oldVideoPath);
+            fs.unlink(oldVideoPath);
           });
+        }
 
         res.json(video);
       });

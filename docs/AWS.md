@@ -15,3 +15,9 @@
     - SOA (?)
     - A: spotvenue.tk -> loadbalancer
     - CNAME: www.spotvenue.tk -> spotvenue.tk
+
+## S3
+- spotvenue
+    - root: processed videos
+    - "original": original videos
+    - "preview": preview image
