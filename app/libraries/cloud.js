@@ -17,6 +17,9 @@ const s3 = new aws.S3({
 });
 
 module.exports = {
+  key: process.env.AWS_ACCESS_KEY_ID,
+  secret: process.env.AWS_SECRET_ACCESS_KEY,
+
   upload(source, destination, done) {
     let body;
 
