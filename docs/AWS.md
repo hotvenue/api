@@ -15,6 +15,9 @@
     - SOA (?)
     - A: spotvenue.tk -> loadbalancer
     - CNAME: www.spotvenue.tk -> spotvenue.tk
+    - TXT: _amazonses.spotvenue.tk (email validation)
+    - CNAME: *._domainkey.spotvenue.tk (email DKIM)
+    - MX (temporary): redirect mails to SES
 
 ## S3
 - spotvenue
