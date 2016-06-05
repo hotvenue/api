@@ -24,3 +24,11 @@
     - root: processed videos
     - "original": original videos
     - "preview": preview image
+- spotvenue-email
+    - root: emails
+
+## SES
+- spotvenue.tk
+- All received emails are saved into `spotvenue-email` S3 bucket
+- Email addresses: 
+    - samantha@spotvenue.tk
