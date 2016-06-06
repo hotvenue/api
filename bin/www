@@ -27,6 +27,8 @@ function normalizePort(val) {
   return false;
 }
 
+process.env.SPOTVENUE_SERVER = 'webserver';
+
 /**
  * Get port from environment and store in Express.
  */

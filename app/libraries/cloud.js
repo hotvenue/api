@@ -4,8 +4,13 @@ const fs = require('fs');
 const config = require('config');
 const awsConfig = config.get('aws');
 
-process.env.AWS_ACCESS_KEY_ID = awsConfig.iam.webserver.key;
-process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam.webserver.secret;
+let iam = 'webserver';
+if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'application') {
+  iam = 'appserver';
+}
+
+process.env.AWS_ACCESS_KEY_ID = awsConfig.iam[iam].key;
+process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam[iam].secret;
 
 const aws = require('aws-sdk');
 
