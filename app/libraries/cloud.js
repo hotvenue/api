@@ -5,7 +5,7 @@ const config = require('config');
 const awsConfig = config.get('aws');
 
 let iam = 'webserver';
-if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'application') {
+if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'appserver') {
   iam = 'appserver';
 }
 
