@@ -87,6 +87,9 @@ const actions = module.exports = {
               })
               .then((result) => {
                 console.log(result);
+              })
+              .catch((err1) => {
+                console.log(err1);
               });
 
             // fs.unlink(oldVideoPath);
