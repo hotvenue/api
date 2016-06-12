@@ -76,6 +76,7 @@ const actions = module.exports = {
 
             email
               .send({
+                from: 'Samantha <samantha@spotvenue.tk>',
                 to: 'nicola@ballarini.me',
                 cc: 'niccolo@olivieriachille.com',
                 subject: 'Aprimi!!!!',
