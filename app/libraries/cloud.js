@@ -4,21 +4,29 @@ const fs = require('fs');
 const config = require('config');
 const awsConfig = config.get('aws');
 
-process.env.AWS_ACCESS_KEY_ID = awsConfig.iam.webserver.key;
-process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam.webserver.secret;
+let iam = 'webserver';
+if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'appserver') {
+  iam = 'appserver';
+}
+
+process.env.AWS_ACCESS_KEY_ID = awsConfig.iam[iam].key;
+process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam[iam].secret;
 
 const aws = require('aws-sdk');
 
-const s3 = new aws.S3({
-  params: {
-    Bucket: awsConfig.s3.bucket,
-  },
-  signatureVersion: 'v4',
-});
-
-module.exports = {
+const cloud = module.exports = {
   key: process.env.AWS_ACCESS_KEY_ID,
   secret: process.env.AWS_SECRET_ACCESS_KEY,
+
+  ses: new aws.SES({
+    region: awsConfig.ses.region,
+  }),
+  s3: new aws.S3({
+    params: {
+      Bucket: awsConfig.s3.bucket,
+    },
+    signatureVersion: 'v4',
+  }),
 
   upload(source, destination, done) {
     let body;
@@ -27,7 +35,7 @@ module.exports = {
       body = fs.createReadStream(source);
     }
 
-    s3
+    cloud.s3
       .upload({
         Body: body,
         Key: destination,

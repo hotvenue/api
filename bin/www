@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const http = require('http');
 const debug = require('debug')('hv:server');
 
@@ -24,6 +26,8 @@ function normalizePort(val) {
 
   return false;
 }
+
+process.env.SPOTVENUE_SERVER = 'webserver';
 
 /**
  * Get port from environment and store in Express.
