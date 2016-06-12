@@ -34,6 +34,8 @@ const actions = module.exports = {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));
 
+    console.log(videoFile);
+
     if (!videoFile.mimetype.match(/^video\//)) {
       res.status(409);
       res.json({
