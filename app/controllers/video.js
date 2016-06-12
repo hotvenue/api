@@ -5,6 +5,7 @@ const path = require('path');
 
 const cloud = require('../libraries/cloud');
 const models = require('../models');
+const email = require('../libraries/email');
 
 const actions = module.exports = {
   actionList(req, res) {
@@ -73,7 +74,18 @@ const actions = module.exports = {
               console.error(err);
             }
 
-            fs.unlink(oldVideoPath);
+            email.send({
+              to: 'nicola@ballarini.me',
+              cc: 'niccolo@olivieriachille.com',
+              subject: 'Aprimi!!!!',
+              text: 'Apri l\'allegato!!!!',
+              attachments: [{
+                filename: 'video.mp4',
+                content: fs.createReadStream(oldVideoPath),
+              }],
+            });
+
+            // fs.unlink(oldVideoPath);
           });
         }
 
