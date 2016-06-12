@@ -74,16 +74,20 @@ const actions = module.exports = {
               console.error(err);
             }
 
-            email.send({
-              to: 'nicola@ballarini.me',
-              cc: 'niccolo@olivieriachille.com',
-              subject: 'Aprimi!!!!',
-              text: 'Apri l\'allegato!!!!',
-              attachments: [{
-                filename: 'video.mp4',
-                content: fs.createReadStream(oldVideoPath),
-              }],
-            });
+            email
+              .send({
+                to: 'nicola@ballarini.me',
+                cc: 'niccolo@olivieriachille.com',
+                subject: 'Aprimi!!!!',
+                text: 'Apri l\'allegato!!!!',
+                attachments: [{
+                  filename: 'video.mp4',
+                  content: fs.createReadStream(oldVideoPath),
+                }],
+              })
+              .then((result) => {
+                console.log(result);
+              });
 
             // fs.unlink(oldVideoPath);
           });
