@@ -3,6 +3,8 @@
 const config = require('config').get('ffmpeg');
 const Ffmpeg = require('fluent-ffmpeg');
 
+const log = require('./log');
+
 Ffmpeg.setFfmpegPath(config.path.ffmpeg);
 Ffmpeg.setFfprobePath(config.path.ffprobe);
 
@@ -136,7 +138,7 @@ module.exports = {
       ])
       .output(videoOutput)
       .on('start', (command) => {
-        console.log(command);
+        log.silly(command);
       })
       .on('error', done)
       .on('end', done)

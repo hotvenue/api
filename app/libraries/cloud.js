@@ -40,9 +40,6 @@ const cloud = module.exports = {
         Body: body,
         Key: destination,
       })
-      // .on('httpUploadProgress', (evt) => {
-      //   console.log(evt);
-      // })
       .send(done);
   },
 };

@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const path = require('path');
 const config = require('config');
 const moment = require('moment');
@@ -20,21 +21,17 @@ function timestamp() {
 function loggerFactory(label) {
   return new winston.Logger({
     transports: [
-      new winston.transports.Console({
+      new winston.transports.Console(_.defaults(options[label] || {}, options.console || {}, {
         label: label === 'default' ? null : label,
         level: label === 'server' ? 'warn' : 'silly',
-        colorize: options.console.colorize,
         timestamp,
-      }),
+      })),
 
-      new winston.transports.File({
-        level: 'silly',
+      new winston.transports.File(_.defaults(options[label] || {}, options.file || {}, {
         timestamp: label === 'server' ? false : timestamp,
         filename: path.join(options.file.path, `${label}.log`),
-        maxsize: 5 * 1024 * 1024,
-        json: false,
         showLevel: label !== 'server',
-      }),
+      })),
     ],
   });
 }

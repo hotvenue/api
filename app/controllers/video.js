@@ -6,6 +6,7 @@ const path = require('path');
 const cloud = require('../libraries/cloud');
 const models = require('../models');
 const email = require('../libraries/email');
+const log = require('../libraries/log');
 
 const actions = module.exports = {
   actionList(req, res) {
@@ -35,8 +36,6 @@ const actions = module.exports = {
     const videoFile = req.file;
     const ext = videoFile.originalname.substr(videoFile.originalname.lastIndexOf('.'));
 
-    console.log(videoFile);
-
     if (!videoFile.mimetype.match(/^video\//)) {
       res.status(409);
       res.json({
@@ -61,7 +60,8 @@ const actions = module.exports = {
           fs.rename(oldVideoPath,
             newVideoPath, (err) => {
               if (err) {
-                console.error(err);
+                log.debug('Error while renaming the video');
+                log.error(err);
               }
 
               fs.unlink(oldVideoPath);
@@ -71,7 +71,8 @@ const actions = module.exports = {
 
           cloud.upload(oldVideoPath, newVideoPath, (err/* , data */) => {
             if (err) {
-              console.error(err);
+              log.debug('Error while uploading the video');
+              log.error(err);
             }
 
             email
@@ -87,10 +88,16 @@ const actions = module.exports = {
                 }],
               })
               .then((result) => {
-                console.log(result);
+                log.debug('Email sent successfully');
+                log.silly(result);
+
+                fs.unlink(oldVideoPath);
               })
               .catch((err1) => {
-                console.log(err1);
+                log.debug('Error while sending email with the video');
+                log.error(err1);
+
+                fs.unlink(oldVideoPath);
               });
 
             // fs.unlink(oldVideoPath);

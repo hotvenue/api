@@ -5,7 +5,12 @@ const path = require('path');
 const config = require('config');
 const Sequelize = require('sequelize');
 
+const log = require('../libraries/log');
+
 const options = config.get('database');
+
+options.logging = log.db.debug;
+
 const sequelize = new Sequelize(options.database, options.username, options.password, options);
 
 const db = module.exports = {};
