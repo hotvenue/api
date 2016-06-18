@@ -6,12 +6,14 @@ const config = require('config');
 const moment = require('moment');
 const winston = require('winston');
 
-const options = config.get('logger');
+const options = config.get('log');
 
 const loggerNames = [
   'default',
   'server',
   'db',
+  'aws',
+  'jobs',
 ];
 
 function timestamp() {

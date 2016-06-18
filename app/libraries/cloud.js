@@ -4,6 +4,8 @@ const fs = require('fs');
 const config = require('config');
 const awsConfig = config.get('aws');
 
+const log = require('./log');
+
 let iam = 'webserver';
 if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'appserver') {
   iam = 'appserver';
@@ -41,5 +43,33 @@ const cloud = module.exports = {
         Key: destination,
       })
       .send(done);
+  },
+
+  download(source, destination, done) {
+    if (typeof destination === 'function') {
+      done = destination; // eslint-disable-line no-param-reassign
+      destination = null; // eslint-disable-line no-param-reassign
+    }
+
+    cloud.s3
+      .getObject({
+        Key: source,
+      }, (err, data) => {
+        if (err) {
+          log.aws.debug('Error while downloading a file from S3');
+          log.aws.error(err);
+
+          done(err);
+          return;
+        }
+
+        if (destination) {
+          const writableStream = fs.createWriteStream(destination);
+
+          data.Body.pipe(writableStream);
+        }
+
+        done();
+      });
   },
 };
