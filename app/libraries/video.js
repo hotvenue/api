@@ -122,6 +122,9 @@ module.exports = {
         `concat=n=${times}:v=1:a=1`,
       ])
       .output(videoOutput)
+      .on('start', (command) => {
+        log.debug(command);
+      })
       .on('error', done)
       .on('end', done)
       .run();
@@ -138,7 +141,7 @@ module.exports = {
       ])
       .output(videoOutput)
       .on('start', (command) => {
-        log.silly(command);
+        log.debug(command);
       })
       .on('error', done)
       .on('end', done)

@@ -30,13 +30,21 @@ module.exports = function videoJob(queue) {
           return;
         }
 
+        log.jobs.debug('Downloaded', remoteVideoInput);
+
         const job = queue.create('video-loop', {
           videoInput: tmpFile1,
           videoOutput: tmpFile2,
           times: 3,
-        });
+        }).save();
 
         job
+          .on('enqueue', () => {
+            log.jobs.debug('Job enqueued');
+          })
+          .on('start', () => {
+            log.jobs.debug('Job enqueued');
+          })
           .on('complete', (result) => {
             log.jobs.debug('Job completed with data, %j', result);
           })

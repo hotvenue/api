@@ -7,6 +7,7 @@ const cloud = require('../libraries/cloud');
 const models = require('../models');
 const email = require('../libraries/email');
 const log = require('../libraries/log');
+const jobs = require('../jobs');
 
 const actions = module.exports = {
   actionList(req, res) {
@@ -74,6 +75,10 @@ const actions = module.exports = {
               log.debug('Error while uploading the video');
               log.error(err);
             }
+
+            jobs.videoEdit_A(newVideoPath, newVideoPath.replace('original', 'edited-A'));
+
+            return;
 
             email
               .send({

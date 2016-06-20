@@ -3,9 +3,13 @@
 const _ = require('lodash');
 const fs = require('fs');
 const kue = require('kue');
-const options = require('config').get('job');
+const config = require('config');
 
-const queue = kue.createQueue(options.kue);
+const options = config.get('job');
+const optionsRedis = config.get('redis');
+
+const queue = kue.createQueue(_.assign(optionsRedis, options.kue));
+queue.watchStuckJobs();
 
 process.nextTick(kue.app.listen.bind(kue.app, options.app.port));
 

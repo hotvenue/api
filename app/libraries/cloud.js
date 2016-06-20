@@ -64,9 +64,7 @@ const cloud = module.exports = {
         }
 
         if (destination) {
-          const writableStream = fs.createWriteStream(destination);
-
-          data.Body.pipe(writableStream);
+          fs.writeFileSync(destination, data.Body);
         }
 
         done();
