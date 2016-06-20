@@ -8,6 +8,8 @@ const config = require('config');
 const options = config.get('job');
 const optionsRedis = config.get('redis');
 
+log.debug(_.assign(optionsRedis, options.kue));
+
 const queue = kue.createQueue(_.assign(optionsRedis, options.kue));
 queue.watchStuckJobs();
 
