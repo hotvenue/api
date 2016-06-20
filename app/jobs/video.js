@@ -25,7 +25,7 @@ module.exports = function videoJob(queue) {
       const tmpFile1 = path.join(configFolder.tmp, uuid.v4());
       const tmpFile2 = path.join(configFolder.tmp, uuid.v4());
 
-      cloud.download(remoteVideoInput, tmpFile, (err) => {
+      cloud.download(remoteVideoInput, tmpFile1, (err) => {
         if (err) {
           return;
         }
