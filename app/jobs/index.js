@@ -10,9 +10,9 @@ const log = require('../libraries/log');
 const options = config.get('job');
 const optionsRedis = config.get('redis');
 
-log.debug(_.assign(optionsRedis, options.kue));
+options.kue.redis = _.assign(optionsRedis, options.kue.redis);
 
-const queue = kue.createQueue(_.assign(optionsRedis, options.kue));
+const queue = kue.createQueue(options.kue);
 queue.watchStuckJobs();
 
 process.nextTick(kue.app.listen.bind(kue.app, options.app.port));
