@@ -5,6 +5,8 @@ const fs = require('fs');
 const kue = require('kue');
 const config = require('config');
 
+const log = require('../libraries/log');
+
 const options = config.get('job');
 const optionsRedis = config.get('redis');
 
