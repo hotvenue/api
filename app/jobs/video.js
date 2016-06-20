@@ -25,6 +25,8 @@ module.exports = function videoJob(queue) {
       const tmpFile1 = path.join(configFolder.tmp, uuid.v4());
       const tmpFile2 = path.join(configFolder.tmp, uuid.v4());
 
+      const ext = remoteVideoInput.substr(remoteVideoInput.lastIndexOf('.'));
+
       cloud.download(remoteVideoInput, tmpFile1, (err) => {
         if (err) {
           return;
@@ -34,7 +36,7 @@ module.exports = function videoJob(queue) {
 
         const job = queue.create('video-loop', {
           videoInput: tmpFile1,
-          videoOutput: tmpFile2,
+          videoOutput: tmpFile2 + ext,
           times: 3,
         }).save();
 
