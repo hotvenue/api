@@ -76,7 +76,8 @@ const actions = module.exports = {
               log.error(err);
             }
 
-            jobs.videoEdit_A(newVideoPath, newVideoPath.replace('original', 'edited-A'));
+            jobs.videoEdit_A(newVideoPath, newVideoPath.replace('original', 'edited-A'),
+              path.join(__dirname, '..', '..', 'test', 'assets', 'watermark.png'));
 
             return;
 

@@ -15,6 +15,30 @@ options.kue.redis = _.assign(optionsRedis, options.kue.redis);
 const queue = kue.createQueue(options.kue);
 queue.watchStuckJobs();
 
+queue.createMyJob = function createMyJob(name, params, complete) {
+  const job = queue.create(name, params);
+
+  job
+    .removeOnComplete(true)
+    .on('complete', (result) => {
+      log.jobs.debug(`Job ${name} completed`);
+      complete(result);
+    })
+    .on('failed attempt', (errorMessage) => {
+      log.jobs.debug(`Job ${name} failed`);
+      log.jobs.error(errorMessage);
+    })
+    .on('failed', (errorMessage) => {
+      log.jobs.debug(`Job ${name} failed`);
+      log.jobs.error(errorMessage);
+    })
+    .on('progress', (progress) => {
+      log.jobs.silly(`Job ${name} progress: ${progress}`);
+    });
+
+  return job;
+};
+
 process.nextTick(kue.app.listen.bind(kue.app, options.app.port));
 
 let jobs = module.exports = {};
