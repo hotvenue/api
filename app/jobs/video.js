@@ -7,10 +7,18 @@ const config = require('config');
 const log = require('../libraries/log');
 const cloud = require('../libraries/cloud');
 const video = require('../libraries/video');
+const models = require('../models');
 
 const configFolder = config.get('folder');
 
 module.exports = function videoJob(queue) {
+  const delay = 60000;
+
+  function createVideoQueueJob() {
+    queue.createMyJob('video-queue')
+      .save();
+  }
+
   queue.process('video-loop', (job, done) => {
     video.loop(job.data.videoInput, job.data.videoOutput, job.data.times, done);
   });
@@ -19,6 +27,30 @@ module.exports = function videoJob(queue) {
     video.watermark(job.data.videoInput, job.data.videoOutput,
       job.data.watermark, job.data.position, done);
   });
+
+  queue.process('video-queue', (job, done) => {
+    models.video
+      .findAll({
+        where: {
+          sent: false,
+        },
+        include: [
+          { model: models.user },
+        ],
+      })
+      .then((videos) => {
+        videos.forEach((video2parse) => {
+          if (video2parse.user != null) {
+            console.log('yeeeee');
+          }
+        });
+
+        setTimeout(createVideoQueueJob, delay);
+        done();
+      });
+  });
+
+  setTimeout(createVideoQueueJob, delay);
 
   return {
     videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark) {

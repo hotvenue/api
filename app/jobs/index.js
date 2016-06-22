@@ -16,6 +16,11 @@ const queue = kue.createQueue(options.kue);
 queue.watchStuckJobs();
 
 queue.createMyJob = function createMyJob(name, params, complete) {
+  // eslint-disable-next-line no-param-reassign
+  complete = typeof params === 'function' ? params : complete || (() => {});
+  // eslint-disable-next-line no-param-reassign
+  params = typeof params === 'function' ? {} : params || {};
+
   const job = queue.create(name, params);
 
   job
@@ -40,6 +45,12 @@ queue.createMyJob = function createMyJob(name, params, complete) {
 };
 
 process.nextTick(kue.app.listen.bind(kue.app, options.app.port));
+process.once('SIGTERM', () => {
+  queue.shutdown(5000, (err) => {
+    log.jobs.debug('Kue shutdown: ', err || '');
+    process.exit(0);
+  });
+});
 
 let jobs = module.exports = {};
 
