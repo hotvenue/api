@@ -3,10 +3,10 @@
 'use strict';
 
 const http = require('http');
-const debug = require('debug')('hv:server');
 
 const app = require('../app/index');
 const models = require('../app/models');
+const log = require('../app/libraries/log');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -46,7 +46,7 @@ const server = module.exports = http.createServer(app);
  * Sync the database and then listen
  */
 models.sequelize.sync({ force: true }).then(() => {
-  debug('Finished build the db');
+  log.server.debug('Finished build the db');
   server.listen(port);
 });
 
@@ -83,5 +83,5 @@ server.on('listening', () => {
   const addr = server.address();
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
-  debug(`Listening on ${bind}`);
+  log.server.debug(`Listening on ${bind}`);
 });
