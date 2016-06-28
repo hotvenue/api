@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 
 const indexController = require('../controllers/index');
@@ -13,14 +14,32 @@ function addRootRoute(app) {
   app.use('/', router);
 }
 
-function addOtherRoutes(app) {
-  fs.readdirSync(__dirname)
-    .filter((filename) => filename !== 'index.js' && filename.substr(-3) === '.js')
+function addOtherRoutes(app, relativePath) {
+  let dirpath = __dirname;
+
+  if (relativePath) {
+    dirpath = path.join(dirpath, relativePath);
+  }
+
+  fs.readdirSync(dirpath)
     .forEach((filename) => {
-      app.use(
-          `/${filename.replace('.js', '')}`,
-          require(`./${filename}`) // eslint-disable-line global-require
-      );
+      if (filename === 'index.js') {
+        return;
+      }
+
+      const filepath = path.join(dirpath, filename);
+
+      if (fs.statSync(filepath).isDirectory()) {
+        addOtherRoutes(app, path.join(relativePath || '', filename));
+      } else {
+        const relativeFilePath = path.join(relativePath || '', filename.replace('.js', ''))
+          .replace(/\\/, '/');
+
+        app.use(
+          `/${relativeFilePath}`,
+          require(`./${relativeFilePath}`) // eslint-disable-line global-require
+        );
+      }
     });
 }
 
