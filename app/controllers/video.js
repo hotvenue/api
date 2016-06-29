@@ -5,7 +5,7 @@ const path = require('path');
 
 const cloud = require('../libraries/cloud');
 const models = require('../models');
-const email = require('../libraries/email');
+ // const email = require('../libraries/email');
 const log = require('../libraries/log');
 const jobs = require('../jobs');
 
@@ -79,6 +79,8 @@ const actions = module.exports = {
             jobs.videoEdit_A(newVideoPath, newVideoPath.replace('original', 'edited-A'),
               path.join(__dirname, '..', '..', 'test', 'assets', 'watermark.png'));
 
+            /*
+
             return;
 
             email
@@ -105,6 +107,8 @@ const actions = module.exports = {
 
                 fs.unlink(oldVideoPath);
               });
+
+            */
 
             // fs.unlink(oldVideoPath);
           });
