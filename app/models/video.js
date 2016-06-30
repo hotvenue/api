@@ -17,11 +17,6 @@ module.exports = function createVideo(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-
-    orphan: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
   }, {
     classMethods: {
       associate: (models) => {
