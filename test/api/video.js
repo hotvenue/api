@@ -92,7 +92,6 @@ describe('Video', () => {
         common.expect(res.body).to.have.property('id');
         common.expect(res.body).to.have.property('user');
         common.expect(res.body.user).to.be.a('object');
-        common.expect(res.body.user).to.have.property('id').and.equal(common.userId);
         common.expect(res.body.user).to.have.property('email').and.equal(common.email);
 
         done();

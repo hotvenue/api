@@ -37,8 +37,6 @@ describe('User', () => {
 
         common.user = user = res.body;
 
-        common.userId = user.id;
-
         done();
       });
   });
