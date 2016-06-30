@@ -20,7 +20,6 @@ module.exports = function createUser(sequelize, DataTypes) {
     classMethods: {
       associate: (models) => {
         user.hasMany(models.video);
-        user.hasMany(models.tmpCode);
       },
     },
   });
