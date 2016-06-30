@@ -5,6 +5,7 @@ const path = require('path');
 const config = require('config');
 const multer = require('multer');
 
+const models = require('../../models');
 const log = require('../../libraries/log');
 const cloud = require('../../libraries/cloud');
 const jobs = require('../../jobs');
@@ -27,6 +28,28 @@ module.exports = {
           context.attributes = { // eslint-disable-line no-param-reassign
             extension: ext,
           };
+
+          if (req.body.user) {
+            return models.user
+              .findCreateFind({
+                where: req.body.user,
+              })
+              .spread((user/* , created */) => {
+                context.attributes.user = { // eslint-disable-line no-param-reassign
+                  id: user.id,
+                };
+
+                delete req.body.user; // eslint-disable-line no-param-reassign
+
+                return context.continue();
+              })
+              .catch((err) => {
+                log.debug('Error while findOrCreating the new user in a POST /video');
+                log.error(err);
+
+                return context.error(500, 'something bad happened');
+              });
+          }
 
           return context.continue();
         });

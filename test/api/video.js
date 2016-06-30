@@ -74,4 +74,28 @@ describe('Video', () => {
       .expect([])
       .end(done);
   });
+
+  it('POST /video with a user should also create the user', (done) => {
+    common.request(common.server)
+      .post('/video')
+      .attach('video', 'test/assets/sample-video.mp4')
+      .field('user[email]', common.email)
+      .expect(201)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+
+          return;
+        }
+
+        common.expect(res.body).to.be.a('object');
+        common.expect(res.body).to.have.property('id');
+        common.expect(res.body).to.have.property('user');
+        common.expect(res.body.user).to.be.a('object');
+        common.expect(res.body.user).to.have.property('id').and.equal(common.userId);
+        common.expect(res.body.user).to.have.property('email').and.equal(common.email);
+
+        done();
+      });
+  });
 });

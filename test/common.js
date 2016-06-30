@@ -33,4 +33,6 @@ module.exports = {
   request: supertest,
   importTests,
   importTestSuite,
+  email: 'hello@its.me',
+  userId: null,
 };

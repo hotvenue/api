@@ -14,12 +14,10 @@ describe('User', () => {
   });
 
   it('POST /user should add a user', (done) => {
-    const email = 'hello@its.me';
-
     common.request(common.server)
       .post('/user')
       .send({
-        email,
+        email: common.email,
       })
       .expect(201)
       .end((err, res) => {
@@ -30,7 +28,7 @@ describe('User', () => {
         }
 
         common.expect(res.body).to.be.a('object');
-        common.expect(res.body).to.have.property('email').and.equal(email);
+        common.expect(res.body).to.have.property('email').and.equal(common.email);
         common.expect(res.body).to.have.property('id').and.equal(1);
         common.expect(res.body).to.have.property('createdAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
@@ -38,7 +36,8 @@ describe('User', () => {
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
         common.user = user = res.body;
-        user.videos = [];
+
+        common.userId = user.id;
 
         done();
       });
