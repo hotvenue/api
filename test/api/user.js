@@ -21,7 +21,7 @@ describe('User', () => {
       .send({
         email,
       })
-      .expect(200)
+      .expect(201)
       .end((err, res) => {
         if (err) {
           done(err);

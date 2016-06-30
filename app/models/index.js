@@ -24,7 +24,7 @@ fs.readdirSync(__dirname)
   });
 
 Object.keys(db).forEach((modelName) => {
-  if ('associate' in db[modelName]) {
+  if (modelName.substr(0, 1) !== '_' && 'associate' in db[modelName]) {
     db[modelName].associate(db);
   }
 });

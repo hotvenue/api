@@ -6,7 +6,7 @@ describe('TmpCode', () => {
   it('POST /tmpCode should create a code', (done) => {
     common.request(common.server)
       .post('/tmpCode')
-      .expect(200)
+      .expect(201)
       .end((err, res) => {
         if (err) {
           done(err);

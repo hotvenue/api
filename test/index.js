@@ -7,7 +7,16 @@ const common = require('./common');
 
 describe('Test HotVenue', () => {
   before((done) => {
-    fs.unlink(config.get('database').storage, done);
+    try {
+      fs.unlinkSync(config.get('database').storage);
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        done(e);
+        return;
+      }
+    }
+
+    done();
   });
 
   before((done) => {
