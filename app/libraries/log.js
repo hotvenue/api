@@ -14,6 +14,7 @@ const loggerNames = [
   'db',
   'aws',
   'jobs',
+  'splunk',
 ];
 
 function timestamp() {
@@ -26,6 +27,7 @@ function loggerFactory(label) {
       new winston.transports.Console(_.defaults(options[label] || {}, options.console || {}, {
         label: label === 'default' ? null : label,
         level: label === 'server' ? 'warn' : 'silly',
+        silent: label === 'splunk',
         timestamp,
       })),
 
@@ -33,6 +35,8 @@ function loggerFactory(label) {
         timestamp: label === 'server' ? false : timestamp,
         filename: path.join(options.file.path, `${label}.log`),
         showLevel: label !== 'server',
+        json: label === 'splunk',
+        stringify: label === 'splunk',
       })),
     ],
   });
