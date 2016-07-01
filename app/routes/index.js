@@ -53,6 +53,7 @@ function addRestRoutes(app) {
       model: models.sequelize.models[model],
       endpoints: [`/${model}`, `/${model}/:id`],
       associations: true,
+      actions: ['create', 'list', 'read', 'update'],
     });
 
     const middlewareFilename = path.join(epilogueFolder, `${model}.js`);
