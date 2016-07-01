@@ -91,6 +91,8 @@ module.exports = {
             path.join(__dirname, '..', '..', '..', 'test', 'assets', 'watermark.png')
           );
 
+          fs.unlinkSync(oldVideoPath);
+
           return context.continue();
 
           /*
@@ -123,8 +125,6 @@ module.exports = {
            });
 
            */
-
-          // fs.unlink(oldVideoPath);
         });
       }
     },
