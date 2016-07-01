@@ -10,3 +10,4 @@
 - [ ] setup Splunk environment
 - [ ] add helmet to secure everything
 - [ ] correlate logs (~jSessionID)
+- [ ] move video/image upload and processing from controllers to models
