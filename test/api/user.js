@@ -93,4 +93,11 @@ describe('User', () => {
         done();
       });
   });
+
+  it('DELETE /user/:id should return an error', (done) => {
+    common.request(common.server)
+      .delete(`/user/${user.id}`)
+      .expect(404)
+      .end(done);
+  });
 });
