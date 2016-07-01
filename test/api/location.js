@@ -26,7 +26,7 @@ describe('Location', () => {
       .field('name', locationName)
       .field('geoLatitude', geoLatitude)
       .field('geoLongitude', geoLongitude)
-      // .expect(201)
+      .expect(201)
       .end((err, res) => {
         if (err) {
           done(err);

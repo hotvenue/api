@@ -2,8 +2,8 @@
 
 const express = require('express');
 
-const indexController = require('../../controllers/index');
+const apiController = require('../../controllers/api/v1');
 
 const router = module.exports = express.Router(); // eslint-disable-line new-cap
 
-router.get('/', indexController.home);
+router.get('/params', apiController.params);
