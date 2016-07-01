@@ -7,3 +7,6 @@
 - [x] cloud.js -> change credentials with an environment var (web / app)
 - [x] kue
 - [ ] application server (different entry point)
+- [ ] setup Splunk environment
+- [ ] add helmet to secure everything
+- [ ] correlate logs (~jSessionID)
