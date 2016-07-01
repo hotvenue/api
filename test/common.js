@@ -34,4 +34,5 @@ module.exports = {
   importTests,
   importTestSuite,
   email: 'hello@its.me',
+  userId: null,
 };

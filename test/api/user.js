@@ -36,9 +36,20 @@ describe('User', () => {
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
         common.user = user = res.body;
+        common.userId = user.id;
 
         done();
       });
+  });
+
+  it('POST /user should not add the same user', (done) => {
+    common.request(common.server)
+      .post('/user')
+      .send({
+        email: common.email,
+      })
+      .expect(400)
+      .end(done);
   });
 
   it('GET /user/:id should return the previously created user', (done) => {
@@ -77,7 +88,7 @@ describe('User', () => {
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('email').and.equal(email);
 
-        common.user.email = email;
+        common.user.email = common.email = email;
 
         done();
       });
