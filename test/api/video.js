@@ -99,6 +99,13 @@ describe('Video', () => {
       });
   });
 
+  it('PUT /video/:id should return an error', (done) => {
+    common.request(common.server)
+      .put(`/user/${common.video.id}`)
+      .expect(404)
+      .end(done);
+  });
+
   it('DELETE /video/:id should return an error', (done) => {
     common.request(common.server)
       .delete(`/user/${common.video.id}`)
