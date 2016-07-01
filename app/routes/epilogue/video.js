@@ -10,8 +10,9 @@ const log = require('../../libraries/log');
 const cloud = require('../../libraries/cloud');
 const jobs = require('../../jobs');
 
-const dataConfig = config.get('folder');
-const upload = multer({ dest: dataConfig.upload });
+const configData = config.get('folder');
+const configS3 = config.get('aws.s3');
+const upload = multer({ dest: configData.upload });
 
 module.exports = {
   create: {
@@ -76,7 +77,7 @@ module.exports = {
             return context.continue();
           });
       } else {
-        const newVideoPath = `video/original/${video.id}${video.extension}`;
+        const newVideoPath = `${configS3.folder.video.original}/${video.id}${video.extension}`;
 
         cloud.upload(oldVideoPath, newVideoPath, (err/* , data */) => {
           if (err) {
@@ -84,8 +85,11 @@ module.exports = {
             log.error(err);
           }
 
-          jobs.videoEdit_A(newVideoPath, newVideoPath.replace('original', 'edited-A'),
-            path.join(__dirname, '..', '..', '..', 'test', 'assets', 'watermark.png'));
+          jobs.videoEdit_A(
+            newVideoPath,
+            newVideoPath.replace(configS3.folder.video.original, configS3.folder.video.editedA),
+            path.join(__dirname, '..', '..', '..', 'test', 'assets', 'watermark.png')
+          );
 
           return context.continue();
 
