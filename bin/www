@@ -45,10 +45,12 @@ const server = module.exports = http.createServer(app);
 /**
  * Sync the database and then listen
  */
-models.sequelize.sync({ force: true }).then(() => {
-  log.server.debug('Finished build the db');
-  server.listen(port);
-});
+models.sequelize
+  .sync({ force: process.env.FLUSH_DB === 'yes' })
+  .then(() => {
+    log.server.debug('Finished build the db');
+    server.listen(port);
+  });
 
 /**
  * Set callbacks
