@@ -34,7 +34,6 @@ describe('User', () => {
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
         common.user = res.body;
-        common.userId = common.user.id;
 
         done();
       });
