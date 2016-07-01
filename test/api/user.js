@@ -3,8 +3,6 @@
 const common = require('../common');
 
 describe('User', () => {
-  let user = {};
-
   it('GET /user should return an empty list', (done) => {
     common.request(common.server)
       .get('/user')
@@ -35,8 +33,8 @@ describe('User', () => {
         common.expect(res.body).to.have.property('updatedAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
-        common.user = user = res.body;
-        common.userId = user.id;
+        common.user = res.body;
+        common.userId = common.user.id;
 
         done();
       });
@@ -54,7 +52,7 @@ describe('User', () => {
 
   it('GET /user/:id should return the previously created user', (done) => {
     common.request(common.server)
-      .get(`/user/${user.id}`)
+      .get(`/user/${common.user.id}`)
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -63,7 +61,7 @@ describe('User', () => {
           return;
         }
 
-        common.expect(res.body).to.be.a('object').and.deep.equal(user);
+        common.expect(res.body).to.be.a('object').and.deep.equal(common.user);
 
         done();
       });
@@ -73,7 +71,7 @@ describe('User', () => {
     const email = 'hello@gmail.com';
 
     common.request(common.server)
-      .put(`/user/${user.id}`)
+      .put(`/user/${common.user.id}`)
       .send({
         email,
       })
@@ -96,7 +94,7 @@ describe('User', () => {
 
   it('DELETE /user/:id should return an error', (done) => {
     common.request(common.server)
-      .delete(`/user/${user.id}`)
+      .delete(`/user/${common.user.id}`)
       .expect(404)
       .end(done);
   });
