@@ -41,7 +41,7 @@ module.exports = function videoJob(queue) {
       .then((videos) => {
         videos.forEach((video2parse) => {
           if (video2parse.user != null) {
-            console.log('yeeeee');
+            log.jobs.info('yeeeee');
           }
         });
 
