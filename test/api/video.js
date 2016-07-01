@@ -75,11 +75,12 @@ describe('Video', () => {
       .end(done);
   });
 
-  it('POST /video with a user should also create the user', (done) => {
+  it('POST /video user and location should also populate the them', (done) => {
     common.request(common.server)
       .post('/video')
       .attach('video', 'test/assets/sample-video.mp4')
       .field('user[email]', common.email)
+      .field('locationId', common.location.id)
       .expect(201)
       .end((err, res) => {
         if (err) {
@@ -90,10 +91,15 @@ describe('Video', () => {
 
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('id');
+
         common.expect(res.body).to.have.property('user');
         common.expect(res.body.user).to.be.a('object');
         common.expect(res.body.user).to.have.property('id').and.equal(common.user.id);
         common.expect(res.body.user).to.have.property('email').and.equal(common.email);
+
+        common.expect(res.body).to.have.property('location');
+        common.expect(res.body.location).to.be.a('object');
+        common.expect(res.body.location).to.have.property('id').and.equal(common.location.id);
 
         done();
       });
