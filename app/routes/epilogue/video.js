@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('config');
 const multer = require('multer');
+const ForbiddenError = require('epilogue').Errors.ForbiddenError;
 
 const models = require('../../models');
 const log = require('../../libraries/log');
@@ -127,6 +128,12 @@ module.exports = {
            */
         });
       }
+    },
+  },
+
+  update: {
+    auth() {
+      throw new ForbiddenError();
     },
   },
 };
