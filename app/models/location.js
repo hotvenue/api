@@ -41,7 +41,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
           configS3.link,
           configS3.bucket,
           configS3.folder.location.frame,
-          `${this.getDataValue('id')}.${this.getDataValue('extension')}`,
+          this.getDataValue('id') + this.getDataValue('extension'),
         ].join('/');
       },
     },

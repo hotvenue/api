@@ -29,7 +29,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
           configS3.link,
           configS3.bucket,
           configS3.folder.video.original,
-          `${this.getDataValue('id')}.${this.getDataValue('extension')}`,
+          this.getDataValue('id') + this.getDataValue('extension'),
         ].join('/');
       },
     },
@@ -41,7 +41,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
           configS3.link,
           configS3.bucket,
           configS3.folder.video.editedA,
-          `${this.getDataValue('id')}.${this.getDataValue('extension')}`,
+          this.getDataValue('id') + this.getDataValue('extension'),
         ].join('/');
       },
     },
