@@ -65,7 +65,7 @@ module.exports = function videoJob(queue) {
                 ),
                 attachments: [{
                   filename: 'video.mp4',
-                  content: request(video.urlEditedA),
+                  content: request(video2parse.urlEditedA),
                 }],
               })
               .then((result) => {
