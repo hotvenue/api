@@ -50,13 +50,15 @@ function afterDbSync() {
   server.listen(port);
 }
 
-if (models.sequelize.options.dialect === 'mysql') {
+const flushDb = process.env.FLUSH_DB === 'yes';
+
+if (models.sequelize.options.dialect === 'mysql' && flushDb) {
   models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
-    .then(() => models.sequelize.sync({ force: process.env.FLUSH_DB === 'yes' }))
+    .then(() => models.sequelize.sync({ force: flushDb }))
     .then(() => models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1'))
     .then(afterDbSync);
 } else {
-  models.sequelize.sync({ force: process.env.FLUSH_DB === 'yes' })
+  models.sequelize.sync({ force: flushDb })
     .then(afterDbSync);
 }
 
