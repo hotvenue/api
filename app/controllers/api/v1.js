@@ -10,7 +10,7 @@ module.exports = {
   params(req, res) {
     const privacyText = md.render(
       fs.readFileSync(
-        path.join(__dirname, '..', '..', 'docs', 'privacy.MD'), {
+        path.join(__dirname, '..', '..', 'docs', 'privacy.md'), {
           encoding: 'utf8',
         }
       )

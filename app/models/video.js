@@ -22,6 +22,11 @@ module.exports = function createVideo(sequelize, DataTypes) {
       defaultValue: false,
     },
 
+    ready: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+
     urlOriginal: {
       type: DataTypes.VIRTUAL,
       get() {

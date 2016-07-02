@@ -89,43 +89,22 @@ module.exports = {
           jobs.videoEdit_A(
             newVideoPath,
             newVideoPath.replace(configS3.folder.video.original, configS3.folder.video.editedA),
-            path.join(__dirname, '..', '..', '..', 'test', 'assets', 'watermark.png')
+            path.join(__dirname, '..', '..', '..', 'test', 'assets', 'watermark.png'),
+            () => {
+              video.ready = true;
+
+              video
+                .save()
+                .catch((errSave) => {
+                  log.debug('Error while saving the edited video');
+                  log.error(errSave);
+                });
+            }
           );
 
           fs.unlinkSync(oldVideoPath);
 
           return context.continue();
-
-          /*
-
-           return;
-
-           email
-           .send({
-           from: 'Samantha <samantha@spotvenue.tk>',
-           to: 'nicola@ballarini.me',
-           cc: 'niccolo@olivieriachille.com',
-           subject: 'Aprimi!!!!',
-           text: 'Apri l\'allegato!!!!',
-           attachments: [{
-           filename: 'video.mp4',
-           content: fs.createReadStream(oldVideoPath),
-           }],
-           })
-           .then((result) => {
-           log.debug('Email sent successfully');
-           log.silly(result);
-
-           fs.unlink(oldVideoPath);
-           })
-           .catch((err1) => {
-           log.debug('Error while sending email with the video');
-           log.error(err1);
-
-           fs.unlink(oldVideoPath);
-           });
-
-           */
         });
       }
     },
