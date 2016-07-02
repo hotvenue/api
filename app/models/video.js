@@ -58,7 +58,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
           configS3.link,
           configS3.bucket,
           configS3.folder.video.preview,
-          `${this.getDataValue('id')}.jpg}`,
+          `${this.getDataValue('id')}.jpg`,
         ].join('/');
       },
     },
