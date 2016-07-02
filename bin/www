@@ -45,12 +45,20 @@ const server = module.exports = http.createServer(app);
 /**
  * Sync the database and then listen
  */
-models.sequelize
-  .sync({ force: process.env.FLUSH_DB === 'yes' })
-  .then(() => {
-    log.server.debug('Finished build the db');
-    server.listen(port);
-  });
+function afterDbSync() {
+  log.server.debug('Finished build the db');
+  server.listen(port);
+}
+
+if (models.sequelize.options.dialect === 'mysql') {
+  models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
+    .then(() => models.sequelize.sync({ force: process.env.FLUSH_DB === 'yes' }))
+    .then(() => models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1'))
+    .then(afterDbSync);
+} else {
+  models.sequelize.sync({ force: process.env.FLUSH_DB === 'yes' })
+    .then(afterDbSync);
+}
 
 /**
  * Set callbacks
@@ -65,13 +73,13 @@ server.on('error', (error) => {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      log.server.error(`${bind} requires elevated privileges`); // eslint-disable-line no-console
+      log.server.error(`${bind} requires elevated privileges`);
       process.exit(1);
 
       break;
 
     case 'EADDRINUSE':
-      log.server.error(`${bind} is already in use`); // eslint-disable-line no-console
+      log.server.error(`${bind} is already in use`);
       process.exit(1);
 
       break;
