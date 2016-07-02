@@ -6,6 +6,8 @@
     "prestart": "npm install",
     "start": "node ./bin/www",
     "start:production": "npm run prestart && pm2 startOrReload config/pm2/production.json",
+    "deploy": "git pull",
+    "deploy:production": "npm run deploy && npm run start:production",
     "dev": "nodemon ./bin/www",
     "eslint": "eslint .",
     "check": "npm run eslint",
