@@ -67,6 +67,22 @@ module.exports = function videoJob(queue) {
                   filename: 'video.mp4',
                   content: request(video.urlEditedA),
                 }],
+              })
+              .then((result) => {
+                log.jobs.debug('Email sent');
+                log.jobs.silly(result);
+
+                video2parse.sent = true; // eslint-disable-line no-param-reassign
+                video2parse
+                  .save()
+                  .catch((errSave) => {
+                    log.jobs.debug('Error while saving the video.sent');
+                    log.jobs.error(errSave);
+                  });
+              })
+              .catch((err) => {
+                log.jobs.debug('Error while sending the email');
+                log.jobs.error(err);
               });
           }
         });
