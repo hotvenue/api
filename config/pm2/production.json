@@ -4,6 +4,7 @@
     "script": "./bin/www",
     "instances": 0,
     "exec_mode": "cluster",
+    "max_restarts": 5,
     "env": {
       "NODE_ENV": "production",
       "SPOTVENUE_SERVER": "appserver"
