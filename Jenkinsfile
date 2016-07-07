@@ -6,7 +6,7 @@ node {
   docker.build('hotvenue')
 
   stage 'Docker push'
-  docker.withRegistry('https://390360040979.dkr.ecr.eu-west-1.amazonaws.com', 'dev-admin') {
+  docker.withRegistry([credentialsId: 'ecr:dev-admin', url: 'https://390360040979.dkr.ecr.eu-west-1.amazonaws.com']) {
     docker.image('hotvenue').push('latest')
   }
 }
