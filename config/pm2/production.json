@@ -5,6 +5,7 @@
     "instances": 0,
     "exec_mode": "cluster",
     "max_restarts": 5,
+    "max_memory_restart": "500M",
     "env": {
       "NODE_ENV": "production",
       "SPOTVENUE_SERVER": "appserver"
