@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "pm2:production": "pm2 startOrReload config/pm2/production.json",
     "prestart": "npm install",
     "start": "node ./bin/www",
-    "start:production": "npm run prestart && pm2 startOrReload config/pm2/production.json",
+    "start:production": "npm run prestart && npm run pm2:production",
     "deploy": "git pull",
     "deploy:production": "npm run deploy && npm run start:production",
     "dev": "nodemon ./bin/www",
