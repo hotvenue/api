@@ -1,5 +1,8 @@
 # Server Setup
-
+    
+    # Update APT
+    sudo apt-get update
+    
     # Install NVM
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.1/install.sh | bash
     source .profile
@@ -19,5 +22,6 @@
     
     # Clone the repo
     git clone https://bitbucket.org/spotview/server.git spotvenue-server
+    cd spotvenue-server
     npm run start:production
     
