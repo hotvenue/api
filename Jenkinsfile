@@ -6,7 +6,7 @@ node {
   docker.build('hotvenue')
 
   stage 'Configure AWS credentials'
-  withCredentials([[$class: 'AWS Credentials', credentialsId: 'dev-admin',
+  withCredentials([[$class: 'AmazonECSRegistryCredential', credentialsId: 'dev-admin',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
     env.AWS_ACCESS_KEY_ID = "${USERNAME}"
     env.AWS_SECRET_ACCESS_KEY = "${PASSWORD}"
