@@ -6,12 +6,9 @@ node {
   docker.build('hotvenue')
 
   stage 'Configure AWS credentials'
-  withCredentials([[$class: 'AmazonECSRegistryCredential', credentialsId: 'dev-admin',
-                    usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-    env.AWS_ACCESS_KEY_ID = "${USERNAME}"
-    env.AWS_SECRET_ACCESS_KEY = "${PASSWORD}"
-    env.AWS_DEFAULT_REGION = "eu-west-1"
-  }
+  env.AWS_ACCESS_KEY_ID = 'AKIAIEGRASVJDVNO6QXA'
+  env.AWS_SECRET_ACCESS_KEY = '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'
+  env.AWS_DEFAULT_REGION = 'eu-west-1'
 
   stage 'ECR Login'
   sh '$(aws ecr get-login)'
