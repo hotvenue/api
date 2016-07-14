@@ -45,6 +45,18 @@ module.exports = function createLocation(sequelize, DataTypes) {
         ].join('/');
       },
     },
+
+    urlWatermark: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
+          configS3.link,
+          configS3.bucket,
+          configS3.folder.location.watermark,
+          `${this.getDataValue('id')}.png`,
+        ].join('/');
+      },
+    },
   }, {
     classMethods: {
       associate: (models) => {
