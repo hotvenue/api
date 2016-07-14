@@ -23,13 +23,13 @@ module.exports = function createLocation(sequelize, DataTypes) {
     },
 
     geoLatitude: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.DOUBLE,
       allowNull: false,
       validate: { min: -90, max: 90 },
     },
 
     geoLongitude: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.DOUBLE,
       allowNull: false,
       validate: { min: -180, max: 180 },
     },
@@ -39,6 +39,15 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.link,
+          this.urlFrameRelative,
+        ].join('/');
+      },
+    },
+
+    urlFrameRelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
           configS3.bucket,
           configS3.folder.location.frame,
           this.getDataValue('id') + this.getDataValue('extension'),
@@ -51,6 +60,15 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.link,
+          this.urlWatermarkRelative,
+        ].join('/');
+      },
+    },
+
+    urlWatermarkRelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
           configS3.bucket,
           configS3.folder.location.watermark,
           `${this.getDataValue('id')}.png`,
