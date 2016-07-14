@@ -7,9 +7,9 @@ const configS3 = config.get('aws.s3');
 module.exports = function createLocation(sequelize, DataTypes) {
   const location = sequelize.define('location', {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
       primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
 
     extension: {
@@ -39,6 +39,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.link,
+          configS3.bucket,
           this.urlFrameRelative,
         ].join('/');
       },
@@ -48,7 +49,6 @@ module.exports = function createLocation(sequelize, DataTypes) {
       type: DataTypes.VIRTUAL,
       get() {
         return [
-          configS3.bucket,
           configS3.folder.location.frame,
           this.getDataValue('id') + this.getDataValue('extension'),
         ].join('/');
@@ -60,6 +60,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.link,
+          configS3.bucket,
           this.urlWatermarkRelative,
         ].join('/');
       },
@@ -69,7 +70,6 @@ module.exports = function createLocation(sequelize, DataTypes) {
       type: DataTypes.VIRTUAL,
       get() {
         return [
-          configS3.bucket,
           configS3.folder.location.watermark,
           `${this.getDataValue('id')}.png`,
         ].join('/');
@@ -79,6 +79,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
     classMethods: {
       associate: (models) => {
         location.hasMany(models.video);
+        location.hasMany(models.device);
       },
     },
   });
