@@ -96,4 +96,6 @@ server.on('listening', () => {
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
   log.server.debug(`Listening on ${bind}`);
+
+  require('../app/jobs'); // eslint-disable-line global-require
 });
