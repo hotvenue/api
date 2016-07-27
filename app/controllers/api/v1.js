@@ -30,6 +30,7 @@ ${privacyText}
 
     res.json({
       privacy,
+      /*
       checkbox: [{
         required: true,
         name: 'privacy-single',
@@ -39,6 +40,8 @@ ${privacyText}
         name: 'privacy-multiple',
         text: 'Checkbox number 2',
       }],
+      */
+      checkbox: [],
     });
   },
 
