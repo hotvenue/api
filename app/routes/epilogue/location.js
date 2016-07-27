@@ -62,10 +62,7 @@ module.exports = {
 
         try {
           fs.renameSync(imageFrameOldPath, imageFrameNewPath);
-          fs.unlinkSync(imageFrameOldPath);
-
           fs.renameSync(imageWatermarkOldPath, imageWatermarkNewPath);
-          fs.unlinkSync(imageWatermarkOldPath);
         } catch (err) {
           log.debug('Error while renaming / deleting location images');
           log.error(err);

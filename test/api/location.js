@@ -22,7 +22,8 @@ describe('Location', () => {
 
     common.request(common.server)
       .post('/location')
-      .attach('image', 'test/assets/sample-image.jpg')
+      .attach('frame', 'test/assets/sample-image.jpg')
+      .attach('watermark', 'test/assets/watermark.png')
       .field('name', locationName)
       .field('geoLatitude', geoLatitude)
       .field('geoLongitude', geoLongitude)
@@ -38,7 +39,6 @@ describe('Location', () => {
         common.expect(res.body).to.have.property('name').and.equal(locationName);
         common.expect(res.body).to.have.property('geoLatitude').and.equal(geoLatitude);
         common.expect(res.body).to.have.property('geoLongitude').and.equal(geoLongitude);
-        common.expect(res.body).to.have.property('id').and.equal(1);
         common.expect(res.body).to.have.property('createdAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')
@@ -46,14 +46,23 @@ describe('Location', () => {
 
         common.location = res.body;
 
-        const imagePath = path.join(config.get('folder').upload,
+        const imageFramePath = path.join(config.get('folder').upload,
           common.location.id + common.location.extension);
 
-        const imageStat = fs.statSync(imagePath);
+        const imageFrameStat = fs.statSync(imageFramePath);
 
-        common.expect(imageStat.isFile()).to.equal(true);
+        common.expect(imageFrameStat.isFile()).to.equal(true);
 
-        fs.unlinkSync(imagePath);
+        fs.unlinkSync(imageFramePath);
+
+        const imageWatermarkPath = path.join(config.get('folder').upload,
+          `${common.location.id}.png`);
+
+        const imageWatermarkStat = fs.statSync(imageWatermarkPath);
+
+        common.expect(imageWatermarkStat.isFile()).to.equal(true);
+
+        fs.unlinkSync(imageWatermarkPath);
 
         done();
       });
