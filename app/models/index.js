@@ -9,7 +9,7 @@ const log = require('../libraries/log');
 
 const options = config.get('database');
 
-options.logging = log.db.debug;
+options.logging = process.env.NODE_ENV === 'test' ? false : log.db.debug;
 
 const sequelize = new Sequelize(options.database, options.username, options.password, options);
 
