@@ -94,7 +94,11 @@ module.exports = function videoJob(queue) {
 
   setTimeout(createVideoQueueJob, delay);
 
-  return {
+  const jobs = {
+    videoEdit(remoteVideoInput, remoteVideoOutput, watermark, done) {
+      jobs.videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark, done);
+    },
+
     videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark, done) {
       const ext = remoteVideoInput.substr(remoteVideoInput.lastIndexOf('.'));
 
@@ -145,4 +149,6 @@ module.exports = function videoJob(queue) {
       });
     },
   };
+
+  return jobs;
 };

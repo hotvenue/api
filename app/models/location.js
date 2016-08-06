@@ -1,6 +1,9 @@
 'use strict';
 
+const path = require('path');
 const config = require('config');
+
+const utils = require('../libraries/utils');
 
 const configS3 = config.get('aws.s3');
 
@@ -10,6 +13,57 @@ module.exports = function createLocation(sequelize, DataTypes) {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
+    },
+
+    frame: {
+      type: DataTypes.VIRTUAL,
+      /**
+       * @param {Object} file
+       * @param {string} file.fieldname - The name of the param passed in the POST
+       * @param {string} file.originalname
+       * @param {string} file.encoding
+       * @param {string} file.mimetype
+       * @param {string} file.destination - The destination directory path
+       * @param {string} file.filename
+       * @param {string} file.path - The destination file path
+       * @param {string} file.size - Filesize in bytes
+       */
+      set(file) {
+        const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
+        this.setDataValue('extension', ext);
+
+        utils.uploadFile(
+          'location frame image',
+          file.mimetype.match(/^image\//),
+          file.path,
+          path.join(file.destination, this.getDataValue('id') + ext),
+          this.urlFrameRelative
+        );
+      },
+    },
+
+    watermark: {
+      type: DataTypes.VIRTUAL,
+      /**
+       * @param {Object} file
+       * @param {string} file.fieldname - The name of the param passed in the POST
+       * @param {string} file.originalname
+       * @param {string} file.encoding
+       * @param {string} file.mimetype
+       * @param {string} file.destination - The destination directory path
+       * @param {string} file.filename
+       * @param {string} file.path - The destination file path
+       * @param {string} file.size - Filesize in bytes
+       */
+      set(file) {
+        utils.uploadFile(
+          'location watermark image',
+          file.mimetype === 'image/png',
+          file.path,
+          path.join(file.destination, `${this.getDataValue('id')}.png`),
+          this.urlWatermarkRelative
+        );
+      },
     },
 
     extension: {
