@@ -132,7 +132,6 @@ module.exports = function createLocation(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        location.hasMany(models.video);
         location.hasMany(models.device);
       },
     },

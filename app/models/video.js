@@ -41,22 +41,26 @@ module.exports = function createVideo(sequelize, DataTypes) {
           path.join(file.destination, this.getDataValue('id') + ext),
           this.urlOriginalRelative,
           () => {
-            jobs.videoEdit(
-              this.urlOriginalRelative,
-              this.urlOriginalRelative
-                .replace(configS3.folder.video.original, configS3.folder.video.editedA),
-              path.join(__dirname, '..', '..', 'test', 'assets', 'watermark.png'),
-              () => {
-                this.ready = true;
+            this.getDevice()
+              .then((device) => device.getLocation())
+              .then((location) => {
+                jobs.videoEdit(
+                  this.urlOriginalRelative,
+                  this.urlOriginalRelative
+                    .replace(configS3.folder.video.original, configS3.folder.video.editedA),
+                  location.urlWatermarkRelative,
+                  () => {
+                    this.ready = true;
 
-                this
-                  .save()
-                  .catch((errSave) => {
-                    log.debug('Error while saving the edited video');
-                    log.error(errSave);
-                  });
-              }
-            );
+                    this
+                      .save()
+                      .catch((errSave) => {
+                        log.debug('Error while saving the edited video');
+                        log.error(errSave);
+                      });
+                  }
+                );
+              });
           }
         );
       },
@@ -125,7 +129,20 @@ module.exports = function createVideo(sequelize, DataTypes) {
     classMethods: {
       associate: (models) => {
         video.belongsTo(models.user);
-        video.belongsTo(models.location);
+        video.belongsTo(models.device);
+      },
+    },
+
+    instanceMethods: {
+      getLocation() {
+        if (!this.deviceId) {
+          return false;
+        }
+
+        return sequelize.models.device.findById(this.deviceId, {
+          include: [{ model: sequelize.models.location }],
+        })
+          .then((device) => device.location);
       },
     },
   });

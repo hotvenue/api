@@ -2,7 +2,9 @@
 
 'use strict';
 
+const path = require('path');
 const http = require('http');
+const Umzug = require('umzug');
 
 const app = require('../app/index');
 const models = require('../app/models');
@@ -41,26 +43,46 @@ app.set('env', process.env.NODE_ENV || 'dev');
  * Create HTTP server.
  */
 const server = module.exports = http.createServer(app);
+const flushDb = process.env.FLUSH_DB === 'yes';
+
+function beforeDbSync() {
+  const umzug = new Umzug({
+    logging: log.debug,
+
+    migrations: {
+      params: [models],
+      path: path.join(__dirname, '..', 'app', 'migrations'),
+    },
+  });
+
+  return umzug.up();
+}
+
+function syncDb() {
+  if (models.sequelize.options.dialect === 'mysql' && flushDb) {
+    return models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
+      .then(() => models.sequelize.sync({ force: flushDb }))
+      .then(() => models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1'));
+  }
+
+  return models.sequelize.sync({ force: flushDb });
+}
 
 /**
  * Sync the database and then listen
  */
 function afterDbSync() {
-  log.server.debug('Finished build the db');
+  log.db.debug('Finished build the db');
   server.listen(port);
 }
 
-const flushDb = process.env.FLUSH_DB === 'yes';
-
-if (models.sequelize.options.dialect === 'mysql' && flushDb) {
-  models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
-    .then(() => models.sequelize.sync({ force: flushDb }))
-    .then(() => models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1'))
-    .then(afterDbSync);
-} else {
-  models.sequelize.sync({ force: flushDb })
-    .then(afterDbSync);
-}
+beforeDbSync()
+  .then(syncDb)
+  .then(afterDbSync)
+  .catch((err) => {
+    log.db.error('Error while db sync & migrate');
+    log.db.debug(err);
+  });
 
 /**
  * Set callbacks

@@ -99,53 +99,60 @@ module.exports = function videoJob(queue) {
       jobs.videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark, done);
     },
 
-    videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark, done) {
+    videoEdit_A(remoteVideoInput, remoteVideoOutput, remoteWatermark, done) {
       const ext = remoteVideoInput.substr(remoteVideoInput.lastIndexOf('.'));
 
       const tmpFile1 = path.join(configFolder.tmp, uuid.v4()) + ext;
       const tmpFile2 = path.join(configFolder.tmp, uuid.v4()) + ext;
       const tmpFile3 = path.join(configFolder.tmp, uuid.v4()) + ext;
+      const tmpFile4 = path.join(configFolder.tmp, uuid.v4()) + ext;
 
       log.jobs.silly('Job "videoEdit_A" started');
 
-      cloud.download(remoteVideoInput, tmpFile1, (err) => {
-        if (err) {
+      cloud.download(remoteWatermark, tmpFile4, (errWatermark) => {
+        if (errWatermark) {
           return;
         }
 
-        log.jobs.debug('Downloaded', remoteVideoInput);
+        cloud.download(remoteVideoInput, tmpFile1, (errVideo) => {
+          if (errVideo) {
+            return;
+          }
 
-        queue.createMyJob('video-loop', {
-          videoInput: tmpFile1,
-          videoOutput: tmpFile2,
-          times: 3,
-        }, (/* result */) => {
-          log.jobs.debug('Video editing completed');
+          log.jobs.debug('Downloaded', remoteVideoInput);
 
-          queue.createMyJob('video-watermark', {
-            videoInput: tmpFile2,
-            videoOutput: tmpFile3,
-            watermark,
-            position: '5:H-h-5',
-          }, () => {
-            log.jobs.debug('Video watermarking complete');
+          queue.createMyJob('video-loop', {
+            videoInput: tmpFile1,
+            videoOutput: tmpFile2,
+            times: 3,
+          }, (/* result */) => {
+            log.jobs.debug('Video editing completed');
 
-            cloud.upload(tmpFile3, remoteVideoOutput, (errUpload) => {
-              if (errUpload) {
-                log.jobs.debug('Upload failed');
-                log.jobs.debug(errUpload);
+            queue.createMyJob('video-watermark', {
+              videoInput: tmpFile2,
+              videoOutput: tmpFile3,
+              watermark: tmpFile4,
+              position: '0:H-h-0',
+            }, () => {
+              log.jobs.debug('Video watermarking complete');
 
-                return;
-              }
+              cloud.upload(tmpFile3, remoteVideoOutput, (errUpload) => {
+                if (errUpload) {
+                  log.jobs.debug('Upload failed');
+                  log.jobs.debug(errUpload);
 
-              log.jobs.debug('Upload completed');
+                  return;
+                }
 
-              log.jobs.silly('Job "videoEdit_A" finished');
+                log.jobs.debug('Upload completed');
 
-              done();
-            });
+                log.jobs.silly('Job "videoEdit_A" finished');
+
+                done();
+              });
+            }).save();
           }).save();
-        }).save();
+        });
       });
     },
   };
