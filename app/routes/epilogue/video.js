@@ -21,29 +21,49 @@ module.exports = {
             file: videoFile,
           };
 
-          if (req.body.user) {
-            return models.user
-              .findCreateFind({
-                where: req.body.user,
-              })
-              .spread((user/* , created */) => {
-                context.attributes.user = { // eslint-disable-line no-param-reassign
-                  id: user.id,
-                };
-
-                delete req.body.user; // eslint-disable-line no-param-reassign
-
-                return context.continue();
-              })
-              .catch((err) => {
-                log.debug('Error while findOrCreating the new user in a POST /video');
-                log.error(err);
-
-                return context.error(500, 'something bad happened');
-              });
+          if (!req.body.user) {
+            return context.error(500, 'no user specified');
           }
 
-          return context.continue();
+          if (!req.body.device) {
+            return context.error(500, 'no device specified');
+          }
+
+          return models.user
+            .findCreateFind({
+              where: req.body.user,
+            })
+            .spread((user/* , created */) => {
+              context.attributes.user = { // eslint-disable-line no-param-reassign
+                id: user.id,
+              };
+
+              delete req.body.user; // eslint-disable-line no-param-reassign
+
+              return models.device
+                .findOne({
+                  where: req.body.device,
+                })
+                .then((device) => {
+                  context.attributes.deviceId = device.id; // eslint-disable-line no-param-reassign
+
+                  delete req.body.device; // eslint-disable-line no-param-reassign
+
+                  return context.continue();
+                })
+                .catch((err) => {
+                  log.debug('Error while finding the device in a POST /video');
+                  log.error(err);
+
+                  return context.error(500, 'something bad happened');
+                });
+            })
+            .catch((err) => {
+              log.debug('Error while findOrCreating the new user in a POST /video');
+              log.error(err);
+
+              return context.error(500, 'something bad happened');
+            });
         });
       },
     },
