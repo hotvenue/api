@@ -8,6 +8,9 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 # Set environment variables
 ENV appDir /var/www/app/current
 
+# Adding the source for ffmpeg
+RUN echo deb http://ftp.uk.debian.org/debian jessie-backports main >> /etc/apt/sources.list
+
 # Run updates and install deps
 RUN apt-get update
 
@@ -23,6 +26,7 @@ RUN apt-get install -y -q --no-install-recommends \
     nginx \
     sudo \
     wget \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y autoclean
 
@@ -35,11 +39,6 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
-
-# Install ffmpeg
-RUN echo deb http://ftp.uk.debian.org/debian jessie-backports main >> /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install ffmpeg -y
 
 # Set up our PATH correctly so we don't have to long-reference npm, node, &c.
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
