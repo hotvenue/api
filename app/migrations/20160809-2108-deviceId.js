@@ -15,7 +15,7 @@ module.exports = {
       .then((fields) => {
         locationFields = fields;
 
-        if (!deviceFields.hasOwnProperty('deviceId')) {
+        if (!deviceFields.hasOwnProperty('identifierForVendor')) {
           return models.sequelize.queryInterface.addColumn('devices', 'identifierForVendor', {
             type: deviceFields.id.type,
           })
