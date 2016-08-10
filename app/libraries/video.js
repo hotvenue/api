@@ -139,6 +139,7 @@ module.exports = {
       .complexFilter([
         `overlay=${position}`, // :format=rgb,format=yuv420p
       ])
+      .noAudio()
       .output(videoOutput)
       .on('start', (command) => {
         log.debug(command);
