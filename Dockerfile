@@ -23,7 +23,6 @@ RUN apt-get install -y -q --no-install-recommends \
     nginx \
     sudo \
     wget \
-    software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y autoclean
 
@@ -38,7 +37,7 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh
     && nvm use default
 
 # Install ffmpeg
-RUN add-apt-repository ppa:mc3man/trusty-media -y
+RUN echo deb http://ftp.uk.debian.org/debian jessie-backports main >> /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install ffmpeg -y
 
