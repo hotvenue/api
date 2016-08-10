@@ -23,6 +23,7 @@ RUN apt-get install -y -q --no-install-recommends \
     nginx \
     sudo \
     wget \
+    software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y autoclean
 
