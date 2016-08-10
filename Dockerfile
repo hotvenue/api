@@ -36,6 +36,11 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh
     && nvm alias default $NODE_VERSION \
     && nvm use default
 
+# Install ffmpeg
+RUN add-apt-repository ppa:mc3man/trusty-media -y
+RUN apt-get update
+RUN apt-get install ffmpeg -y
+
 # Set up our PATH correctly so we don't have to long-reference npm, node, &c.
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
