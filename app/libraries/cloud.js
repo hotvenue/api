@@ -20,14 +20,14 @@ const cloud = module.exports = {
   key: process.env.AWS_ACCESS_KEY_ID,
   secret: process.env.AWS_SECRET_ACCESS_KEY,
 
-  ses: new aws.SES({
-    region: awsConfig.ses.region,
-  }),
   s3: new aws.S3({
     params: {
       Bucket: awsConfig.s3.bucket,
     },
     signatureVersion: 'v4',
+  }),
+  ses: new aws.SES({
+    region: awsConfig.ses.region,
   }),
 
   upload(source, destination, done) {
