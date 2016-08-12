@@ -20,6 +20,8 @@ const cloud = module.exports = {
   key: process.env.AWS_ACCESS_KEY_ID,
   secret: process.env.AWS_SECRET_ACCESS_KEY,
 
+  credentials: new aws.EnvironmentCredentials('AWS'),
+
   s3: new aws.S3({
     params: {
       Bucket: awsConfig.s3.bucket,

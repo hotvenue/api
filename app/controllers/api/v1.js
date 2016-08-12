@@ -48,11 +48,11 @@ ${privacyText}
   log(req, res) {
     let severity = req.params.severity || 'info';
 
-    if (Object.keys(log.splunk.levels).indexOf(severity) === -1) {
+    if (Object.keys(log.analytics.levels).indexOf(severity) === -1) {
       severity = 'info';
     }
 
-    log.splunk[severity](req.body);
+    log.analytics[severity](req.body);
 
     res.json({
       severity,
