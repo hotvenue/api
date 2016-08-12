@@ -1,11 +1,11 @@
 'use strict';
 
 const _ = require('lodash');
-const path = require('path');
 const config = require('config');
 const moment = require('moment');
 const winston = require('winston');
-const Elasticsearch = require('winston-elasticsearch');
+
+require('winston-elasticsearch');
 
 const options = config.get('log');
 
@@ -29,14 +29,14 @@ function timestamp() {
 function loggerFactory(label) {
   return new winston.Logger({
     transports: [
-      new winston.transports.Console(_.defaults(options[label] || {}, options.console || {}, {
+      new winston.transports.Console(_.defaults({}, options[label] || {}, options.console || {}, {
         label: label === 'default' ? null : label,
         level: label === 'server' ? 'warn' : 'info',
         silent: label === 'analytics',
         timestamp,
       })),
 
-      new Elasticsearch(_.defaults(options.elasticsearch || {}, {
+      new winston.transports.Elasticsearch(_.defaults({}, options.elasticsearch || {}, {
         indexPrefix: label,
         level: 'silly',
         client: cloud.es,
