@@ -36,18 +36,9 @@ function loggerFactory(label) {
         timestamp,
       })),
 
-      new winston.transports.File(_.defaults(options[label] || {}, options.file || {}, {
-        timestamp: label === 'server' ? false : timestamp,
-        filename: path.join(options.file.path, `${label}.log`),
-        showLevel: label !== 'server',
-        json: label === 'analytics',
-        stringify: label === 'analytics',
-      })),
-
       new Elasticsearch(_.defaults(options.elasticsearch || {}, {
         indexPrefix: label,
         level: 'silly',
-        silent: label === 'analytics',
         client: cloud.es,
       })),
     ],
