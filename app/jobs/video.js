@@ -33,6 +33,10 @@ module.exports = function videoJob(queue) {
       job.data.watermark, job.data.position, done);
   });
 
+  queue.process('video-screenshot', (job, done) => {
+    video.screenshot(job.data.videoInput, job.data.imageOutput, done);
+  });
+
   queue.process('video-queue', (job, done) => {
     models.video
       .findAll({
@@ -95,31 +99,45 @@ module.exports = function videoJob(queue) {
   setTimeout(createVideoQueueJob, delay);
 
   const jobs = {
-    videoEdit(remoteVideoInput, remoteVideoOutput, watermark, done) {
-      jobs.videoEdit_A(remoteVideoInput, remoteVideoOutput, watermark, done);
+    videoEdit(remoteVideoInput, remoteVideoOutput, remoteWatermark, remoteImageOutput, done) {
+      jobs.videoEdit_A(
+        remoteVideoInput,
+        remoteVideoOutput,
+        remoteWatermark,
+        remoteImageOutput,
+        done);
     },
 
-    videoEdit_A(remoteVideoInput, remoteVideoOutput, remoteWatermark, done) {
+    videoEdit_A(remoteVideoInput, remoteVideoOutput, remoteWatermark, remoteImageOutput, done) {
       const ext = remoteVideoInput.substr(remoteVideoInput.lastIndexOf('.'));
 
       const tmpFile1 = path.join(configFolder.tmp, uuid.v4()) + ext;
       const tmpFile2 = path.join(configFolder.tmp, uuid.v4()) + ext;
       const tmpFile3 = path.join(configFolder.tmp, uuid.v4()) + ext;
       const tmpFile4 = path.join(configFolder.tmp, uuid.v4()) + ext;
+      const tmpImage = `${path.join(configFolder.tmp, uuid.v4())}.png`;
 
       log.jobs.silly('Job "videoEdit_A" started');
 
-      cloud.download(remoteWatermark, tmpFile4, (errWatermark) => {
-        if (errWatermark) {
+      cloud.download(remoteWatermark, tmpFile4, (errDownloadWatermark) => {
+        if (errDownloadWatermark) {
+          log.jobs.error('Error while downloading the watermark');
+          log.jobs.debug(errDownloadWatermark);
+
           return;
         }
 
+        log.jobs.debug('Watermark downloaded', remoteWatermark);
+
         cloud.download(remoteVideoInput, tmpFile1, (errVideo) => {
           if (errVideo) {
+            log.jobs.error('Error while downloading the video');
+            log.jobs.debug(errVideo);
+
             return;
           }
 
-          log.jobs.debug('Downloaded', remoteVideoInput);
+          log.jobs.debug('Video downloaded', remoteVideoInput);
 
           queue.createMyJob('video-loop', {
             videoInput: tmpFile1,
@@ -133,22 +151,47 @@ module.exports = function videoJob(queue) {
               videoOutput: tmpFile3,
               watermark: tmpFile4,
               position: '0:H-h-0',
-            }, () => {
-              log.jobs.debug('Video watermarking complete');
+            }, (/* result */) => {
+              log.jobs.debug('Video watermarking completed');
 
               cloud.upload(tmpFile3, remoteVideoOutput, (errUpload) => {
                 if (errUpload) {
-                  log.jobs.debug('Upload failed');
+                  log.jobs.debug('Video upload failed');
                   log.jobs.debug(errUpload);
 
                   return;
                 }
 
-                log.jobs.debug('Upload completed');
+                log.jobs.debug('Video upload completed');
 
-                log.jobs.silly('Job "videoEdit_A" finished');
+                queue.createMyJob('video-screenshot', {
+                  videoInput: tmpFile3,
+                  imageOutput: tmpImage,
+                }, (/* result */) => {
+                  log.jobs.debug('Video screenshot completed');
 
-                done();
+                  cloud.upload(tmpImage, remoteImageOutput, (errUploadScreenshot) => {
+                    if (errUploadScreenshot) {
+                      log.jobs.debug('Screenshot upload failed');
+                      log.jobs.debug(errUpload);
+
+                      return;
+                    }
+
+                    log.jobs.debug('Screenshot upload completed');
+                  })
+
+                  fs.unlinkSync(tmpFile1);
+                  fs.unlinkSync(tmpFile2);
+                  fs.unlinkSync(tmpFile3);
+                  fs.unlinkSync(tmpFile4);
+                  fs.unlinkSync(tmpImage);
+
+                  log.jobs.silly('Job "videoEdit_A" finished');
+
+                  done();
+
+                }).save();
               });
             }).save();
           }).save();

@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const config = require('config').get('ffmpeg');
 const Ffmpeg = require('fluent-ffmpeg');
 
@@ -147,5 +148,25 @@ module.exports = {
       .on('error', done)
       .on('end', done)
       .run();
+  },
+
+  screenshot(videoInput, imageOutput, done) {
+    const videoCmd = new Ffmpeg();
+
+    const folder = path.dirname(imageOutput);
+    const filename = path.basename(imageOutput);
+
+    videoCmd
+      .input(videoInput)
+      .screenshots({
+        count: 1,
+        folder,
+        filename,
+      })
+      .on('start', (command) => {
+        log.debug(command);
+      })
+      .on('error', done)
+      .on('end', done);
   },
 };

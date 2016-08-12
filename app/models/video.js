@@ -49,6 +49,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
                   this.urlOriginalRelative
                     .replace(configS3.folder.video.original, configS3.folder.video.editedA),
                   location.urlWatermarkRelative,
+                  this.urlPreviewRelative,
                   () => {
                     this.ready = true;
 
@@ -120,6 +121,15 @@ module.exports = function createVideo(sequelize, DataTypes) {
         return [
           configS3.link,
           configS3.bucket,
+          this.urlPreviewRelative,
+        ].join('/');
+      },
+    },
+
+    urlPreviewRelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
           configS3.folder.video.preview,
           `${this.getDataValue('id')}.jpg`,
         ].join('/');
