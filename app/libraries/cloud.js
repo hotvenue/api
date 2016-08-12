@@ -20,8 +20,16 @@ const cloud = module.exports = {
   key: process.env.AWS_ACCESS_KEY_ID,
   secret: process.env.AWS_SECRET_ACCESS_KEY,
 
-  credentials: new aws.EnvironmentCredentials('AWS'),
-
+  es: require('elasticsearch').Client({
+    hosts: awsConfig.es.endpoint,
+    connectionClass: require('http-aws-es'), // eslint-disable-line global-require
+    amazonES: {
+      region: awsConfig.es.region,
+      // credentials: new aws.EnvironmentCredentials('AWS'),
+      accessKey: process.env.AWS_ACCESS_KEY_ID,
+      secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  }),
   s3: new aws.S3({
     params: {
       Bucket: awsConfig.s3.bucket,

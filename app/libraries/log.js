@@ -9,6 +9,8 @@ const Elasticsearch = require('winston-elasticsearch');
 
 const options = config.get('log');
 
+const cloud = require('./cloud');
+
 const loggerNames = [
   'default',
   'server',
@@ -42,18 +44,11 @@ function loggerFactory(label) {
         stringify: label === 'analytics',
       })),
 
-      new Elasticsearch(_.defaults(options[label] || {}, options.elasticsearch || {}, {
+      new Elasticsearch(_.defaults(options.elasticsearch || {}, {
         indexPrefix: label,
         level: 'silly',
         silent: label === 'analytics',
-        clientOpts: {
-          hosts: 'https://amazon-es-host.us-east-1.es.amazonaws.com',
-          connectionClass: require('http-aws-es'), // eslint-disable-line global-require
-          amazonES: {
-            region: "us-east-1",
-            credentials: myCredentials
-          },
-        },
+        client: cloud.es,
       })),
     ],
   });
