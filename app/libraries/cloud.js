@@ -78,7 +78,7 @@ const cloud = module.exports = {
           fs.writeFileSync(destination, data.Body);
         }
 
-        done();
+        done(null, data.Body);
       });
   },
 };
