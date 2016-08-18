@@ -14,7 +14,7 @@ module.exports = function addRestRoutes(app) {
       actions: ['create', 'list', 'read', 'update'],
     });
 
-    const middlewareFilename = path.join(__dirname, `${model}.js`);
+    const middlewareFilename = `${model}.js`;
 
     try {
       if (fs.statSync(path.join(__dirname, middlewareFilename)).isFile()) {
