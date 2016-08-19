@@ -76,6 +76,10 @@ module.exports = function createLocation(sequelize, DataTypes) {
       allowNull: false,
     },
 
+    hashtag: {
+      type: DataTypes.STRING,
+    },
+
     geoLatitude: {
       type: DataTypes.DOUBLE,
       allowNull: false,

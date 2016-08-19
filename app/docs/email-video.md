@@ -1,3 +1,11 @@
-# Here is your video!
+Thank you for using HotVenue at ${LOCATION}$. 
 
-What are you waiting for? Share it **NOW**!!!
+Keep on celebrating and share the magic of these moments: ${HASHTAG}$
+
+
+Cheers, 
+
+The HotVenue Team
+
+
+What about HotVenue at your next event? Reach out: team@hotvenueapp.com

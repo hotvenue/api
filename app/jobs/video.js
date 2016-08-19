@@ -46,6 +46,7 @@ module.exports = function videoJob(queue) {
         },
         include: [
           { model: models.user },
+          { model: models.device, include: [{ model: models.location }] },
         ],
       })
       .then((videos) => {
@@ -58,7 +59,7 @@ module.exports = function videoJob(queue) {
             email
               .send({
                 from: configEmail.from,
-                to: video2parse.user.email,
+                to: `${configEmail.toName} <${video2parse.user.email}>`,
                 subject: 'Here is your video!',
                 html: md.render(
                   fs.readFileSync(
@@ -66,6 +67,8 @@ module.exports = function videoJob(queue) {
                       encoding: 'utf8',
                     }
                   )
+                    .replace(/\$\{LOCATION}\$/g, video2parse.device.location.name)
+                    .replace(/\$\{HASHTAG}\$/g, video2parse.device.location.hashtag)
                 ),
                 attachments: [{
                   filename: 'video.mp4',
@@ -179,7 +182,7 @@ module.exports = function videoJob(queue) {
                     }
 
                     log.jobs.debug('Screenshot upload completed');
-                  })
+                  });
 
                   fs.unlinkSync(tmpFile1);
                   fs.unlinkSync(tmpFile2);
@@ -190,7 +193,6 @@ module.exports = function videoJob(queue) {
                   log.jobs.silly('Job "videoEdit_A" finished');
 
                   done();
-
                 }).save();
               });
             }).save();
