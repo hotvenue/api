@@ -15,6 +15,7 @@ module.exports = {
           models.video
             .count({
               where: {
+                ready: true,
                 createdAt: {
                   $gt: new Date(new Date() - 60 * 60 * 1000),
                 },
