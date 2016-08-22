@@ -17,7 +17,7 @@ const loggerNames = [
   'db',
   'aws',
   'jobs',
-  'analytics',
+  'analyticsFrame',
 ];
 
 // { error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }
@@ -32,12 +32,12 @@ function loggerFactory(label) {
       new winston.transports.Console(_.defaults({}, options[label] || {}, options.console || {}, {
         label: label === 'default' ? null : label,
         level: label === 'server' ? 'warn' : 'info',
-        silent: label === 'analytics',
+        silent: label === 'analyticsFrame',
         timestamp,
       })),
 
       new winston.transports.Elasticsearch(_.defaults({}, options.elasticsearch || {}, {
-        indexPrefix: label,
+        messageType: label,
         level: 'silly',
         client: cloud.es,
       })),

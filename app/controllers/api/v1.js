@@ -48,11 +48,11 @@ ${privacyText}
   log(req, res) {
     let severity = req.params.severity || 'info';
 
-    if (Object.keys(log.analytics.levels).indexOf(severity) === -1) {
+    if (Object.keys(log.analyticsFrame.levels).indexOf(severity) === -1) {
       severity = 'info';
     }
 
-    log.analytics[severity](req.body);
+    log.analyticsFrame[severity](req.body);
 
     res.json({
       severity,
