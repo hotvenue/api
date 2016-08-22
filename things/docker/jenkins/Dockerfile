@@ -1,0 +1,48 @@
+# Dockerfile
+FROM jenkins
+
+# Switch to root so that we can install things
+USER root
+
+# Run updates and install deps
+RUN apt-get update
+
+RUN apt-get install -y -q --no-install-recommends \
+    python2.7 \
+    apt-transport-https \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get -y autoclean
+
+# Install pip
+RUN curl -O https://bootstrap.pypa.io/get-pip.py
+RUN python get-pip.py
+
+# Install the AWS CLI
+RUN pip install awscli
+
+RUN apt-key adv \
+    --keyserver hkp://p80.pool.sks-keyservers.net:80 \
+    --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+RUN echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/sources.list.d/docker.list
+
+# Re-update and install docker
+RUN apt-get update
+RUN apt-get install -y -q --no-install-recommends \
+    docker-engine
+
+VOLUME /var/run/docker.sock
+
+RUN usermod -g docker jenkins
+# RUN groupmod -g $(stat -c "%g" /var/run/docker.sock) docker
+# RUN usermod -u $(stat -c "%u" /var/jenkins_home) jenkins
+
+# Switch back to jenkins user
+USER jenkins
+
+# #!/bin/bash
+# export AWS_ACCESS_KEY_ID='AKIAIEGRASVJDVNO6QXA'
+# export AWS_SECRET_ACCESS_KEY='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'
+# export AWS_DEFAULT_REGION='eu-west-1'
+# eval `aws ecr get-login`
