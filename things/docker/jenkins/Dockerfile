@@ -30,7 +30,7 @@ RUN echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/
 # Re-update and install docker
 RUN apt-get update
 RUN apt-get install -y -q --no-install-recommends \
-    docker-engine
+    docker-engine=1.11.2
 RUN usermod -g docker jenkins
 
 VOLUME /var/run/docker.sock
