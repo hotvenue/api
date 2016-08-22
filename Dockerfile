@@ -23,7 +23,6 @@ RUN apt-get install -y -q --no-install-recommends \
     gcc \
     git \
     make \
-    nginx \
     sudo \
     wget \
     ffmpeg \
