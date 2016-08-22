@@ -31,15 +31,17 @@ RUN echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/
 RUN apt-get update
 RUN apt-get install -y -q --no-install-recommends \
     docker-engine
+RUN usermod -g docker jenkins
 
 VOLUME /var/run/docker.sock
 
-RUN usermod -g docker jenkins
 # RUN groupmod -g $(stat -c "%g" /var/run/docker.sock) docker
 # RUN usermod -u $(stat -c "%u" /var/jenkins_home) jenkins
 
+ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && gosu jenkins /bin/tini -- /usr/local/bin/jenkins.sh
+
 # Switch back to jenkins user
-USER jenkins
+# USER jenkins
 
 # #!/bin/bash
 # export AWS_ACCESS_KEY_ID='AKIAIEGRASVJDVNO6QXA'
