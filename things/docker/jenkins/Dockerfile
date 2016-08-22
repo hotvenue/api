@@ -38,7 +38,7 @@ VOLUME /var/run/docker.sock
 # RUN groupmod -g $(stat -c "%g" /var/run/docker.sock) docker
 # RUN usermod -u $(stat -c "%u" /var/jenkins_home) jenkins
 
-ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && gosu jenkins /bin/tini -- /usr/local/bin/jenkins.sh
+ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && /bin/tini -- /usr/local/bin/jenkins.sh
 
 # Switch back to jenkins user
 # USER jenkins
