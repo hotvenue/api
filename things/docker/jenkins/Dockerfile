@@ -35,8 +35,10 @@ RUN usermod -g docker jenkins
 
 # VOLUME /var/run/docker.sock
 
-RUN mkdir /var/cache/jenkins
+RUN mkdir -p /var/cache/jenkins
+RUN mkdir -p ${JENKINS_HOME}/logs
 RUN chown -R jenkins:jenkins /var/cache/jenkins
+RUN chown -R jenkins:jenkins ${JENKINS_HOME}/logs
 
 ENV JENKINS_OPTS="--handlerCountStartup=100 --handlerCountMax=300 --logfile=$JENKINS_HOME/logs/jenkins.log --webroot=/var/cache/jenkins/war"
 
