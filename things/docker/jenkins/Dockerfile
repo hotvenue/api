@@ -49,6 +49,7 @@ ENV JENKINS_OPTS="--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/je
 ENTRYPOINT ["/bin/tini", "--"]
 CMD ["groupmod", "-g", "$(stat -c \"%g\" /var/run/docker.sock)", "docker"]
 CMD ["usermod", "-u", "$(stat -c \"%u\" /var/jenkins_home)", "jenkins"]
+CMD ["su", "-", "jenkins"]
 CMD ["/usr/local/bin/jenkins.sh"]
 
 # Switch back to jenkins user
