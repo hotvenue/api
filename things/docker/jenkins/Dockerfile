@@ -42,9 +42,14 @@ RUN chown -R jenkins:jenkins /var/log/jenkins
 
 ENV JENKINS_OPTS="--handlerCountStartup=100 --handlerCountMax=300 --logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
 
-ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker \
-        && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins \
-        && /bin/tini -- /usr/local/bin/jenkins.sh
+# ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker \
+#         && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins \
+#         && /bin/tini -- /usr/local/bin/jenkins.sh
+
+ENTRYPOINT ["/bin/tini", "--"]
+CMD ["groupmod", "-g", "$(stat -c \"%g\" /var/run/docker.sock)", "docker"]
+CMD ["usermod", "-u", "$(stat -c \"%u\" /var/jenkins_home)", "jenkins"]
+CMD ["/usr/local/bin/jenkins.sh"]
 
 # Switch back to jenkins user
 # USER jenkins
