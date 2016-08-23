@@ -43,7 +43,7 @@ ENV JENKINS_OPTS="--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/je
 
 # Pre-install plugins and removing the configurator
 COPY plugins.txt /usr/share/jenkins/ref/
-RUN /usr/local/bin/plugins.sh /usr/share/jenkins/ref/install-plugins.txt
+RUN /usr/local/bin/install-plugins.sh /usr/share/jenkins/ref/plugins.txt
 RUN echo 2.0 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state
 
 ENTRYPOINT ["/bin/tini", "--"]
