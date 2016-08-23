@@ -33,14 +33,16 @@ RUN apt-get install -y -q --no-install-recommends \
     docker-engine=1.11.2-0~jessie
 RUN usermod -g docker jenkins
 
-VOLUME /var/run/docker.sock
+# VOLUME /var/run/docker.sock
 
 RUN mkdir /var/cache/jenkins
 RUN chown -R jenkins:jenkins /var/cache/jenkins
 
 ENV JENKINS_OPTS="--handlerCountStartup=100 --handlerCountMax=300 --logfile=$JENKINS_HOME/logs/jenkins.log --webroot=/var/cache/jenkins/war"
 
-ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && /bin/tini -- /usr/local/bin/jenkins.sh
+ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker \
+        && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins \
+        && /bin/tini -- /usr/local/bin/jenkins.sh
 
 # Switch back to jenkins user
 # USER jenkins
