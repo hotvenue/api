@@ -40,8 +40,7 @@ RUN mkdir -p /var/log/jenkins
 RUN chown -R jenkins:jenkins /var/cache/jenkins
 RUN chown -R jenkins:jenkins /var/log/jenkins
 
-# ENV JENKINS_OPTS="--handlerCountStartup=100 --handlerCountMax=300 --logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
-ENV JENKINS_OPTS="--handlerCountStartup=100 --handlerCountMax=300"
+ENV JENKINS_OPTS="--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
 
 # ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker \
 #         && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins \
