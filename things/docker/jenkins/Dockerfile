@@ -35,16 +35,7 @@ RUN usermod -g docker jenkins
 
 VOLUME /var/run/docker.sock
 
-# RUN groupmod -g $(stat -c "%g" /var/run/docker.sock) docker
-# RUN usermod -u $(stat -c "%u" /var/jenkins_home) jenkins
-
 ENTRYPOINT groupmod -g $(stat -c "%g" /var/run/docker.sock) docker && usermod -u $(stat -c "%u" /var/jenkins_home) jenkins && /bin/tini -- /usr/local/bin/jenkins.sh
 
 # Switch back to jenkins user
 # USER jenkins
-
-# #!/bin/bash
-# export AWS_ACCESS_KEY_ID='AKIAIEGRASVJDVNO6QXA'
-# export AWS_SECRET_ACCESS_KEY='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'
-# export AWS_DEFAULT_REGION='eu-west-1'
-# eval `aws ecr get-login`
