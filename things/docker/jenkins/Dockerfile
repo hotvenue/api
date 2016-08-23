@@ -41,6 +41,10 @@ RUN chown -R jenkins:jenkins /var/log/jenkins
 
 ENV JENKINS_OPTS="--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
 
+# Pre-install plugins
+COPY plugins.txt /usr/share/jenkins/ref/
+RUN /usr/local/bin/plugins.sh /usr/share/jenkins/ref/install-plugins.txt
+
 ENTRYPOINT ["/bin/tini", "--"]
 CMD ["groupmod", "-g", "$(stat -c \"%g\" /var/run/docker.sock)", "docker"]
 CMD ["usermod", "-u", "$(stat -c \"%u\" /var/jenkins_home)", "jenkins"]
