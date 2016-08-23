@@ -42,8 +42,72 @@ RUN chown -R jenkins:jenkins /var/log/jenkins
 ENV JENKINS_OPTS="--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
 
 # Pre-install plugins and removing the configurator
-COPY plugins.txt /usr/share/jenkins/ref/
-RUN /usr/local/bin/install-plugins.sh /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/install-plugins.sh workflow-step-api \
+                                      mapdb-api \
+                                      github-organization-folder \
+                                      pipeline-rest-api \
+                                      antisamy-markup-formatter \
+                                      jquery-detached \
+                                      workflow-multibranch \
+                                      subversion \
+                                      matrix-auth \
+                                      pipeline-build-step \
+                                      matrix-project \
+                                      cloudbees-folder \
+                                      build-timeout \
+                                      pam-auth \
+                                      workflow-support \
+                                      workflow-job \
+                                      handlebars \
+                                      git-server \
+                                      timestamper \
+                                      windows-slaves \
+                                      pipeline-stage-view \
+                                      github \
+                                      github-api \
+                                      ws-cleanup \
+                                      junit \
+                                      gradle \
+                                      ssh-credentials \
+                                      pipeline-input-step \
+                                      workflow-aggregator \
+                                      ldap \
+                                      workflow-api \
+                                      workflow-cps \
+                                      external-monitor-job \
+                                      structs \
+                                      plain-credentials \
+                                      git \
+                                      momentjs \
+                                      workflow-scm-step \
+                                      durable-task \
+                                      branch-api \
+                                      git-client \
+                                      token-macro \
+                                      ant \
+                                      ssh-slaves \
+                                      mailer \
+                                      pipeline-stage-step \
+                                      workflow-basic-steps \
+                                      scm-api \
+                                      script-security \
+                                      credentials \
+                                      email-ext \
+                                      workflow-durable-task-step \
+                                      workflow-cps-global-lib \
+                                      ace-editor \
+                                      github-branch-source \
+                                      credentials-binding \
+                                      icon-shim \
+                                      jackson2-api \
+                                      aws-java-sdk \
+                                      aws-credentials \
+                                      authentication-tokens \
+                                      docker-commons \
+                                      docker-build-publish \
+                                      mercurial \
+                                      bitbucket
+
 RUN echo 2.0 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state
 
 ENTRYPOINT ["/bin/tini", "--"]
