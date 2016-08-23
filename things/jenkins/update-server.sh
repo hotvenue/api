@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./update.sh "hotvenue" "hotvenue" "hotvenue-server"
+./things/jenkins/update.sh "hotvenue" "hotvenue" "hotvenue-server"

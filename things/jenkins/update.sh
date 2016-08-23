@@ -6,7 +6,7 @@ TASK_FAMILY="$3"
 IMAGE_VERSION="v_"${BUILD_NUMBER}
 
 # Create a new task definition for this build
-sed -e "s;%BUILD_NUMBER%;${BUILD_NUMBER};g" ${TASK_FAMILY}.json > ${TASK_FAMILY}-v_${BUILD_NUMBER}.json
+sed -e "s;%BUILD_NUMBER%;${BUILD_NUMBER};g" things/jenkins/${TASK_FAMILY}.json > ${TASK_FAMILY}-v_${BUILD_NUMBER}.json
 aws ecs register-task-definition --family ${TASK_FAMILY} --cli-input-json file://${TASK_FAMILY}-v_${BUILD_NUMBER}.json
 
 # Update the service with the new task definition and desired count
