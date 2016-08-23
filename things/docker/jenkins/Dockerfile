@@ -37,6 +37,7 @@ RUN usermod -g docker jenkins
 
 RUN mkdir -p /var/cache/jenkins
 RUN mkdir -p ${JENKINS_HOME}/logs
+RUN ls -la ${JENKINS_HOME}
 RUN chown -R jenkins:jenkins /var/cache/jenkins
 RUN chown -R jenkins:jenkins ${JENKINS_HOME}/logs
 
