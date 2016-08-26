@@ -1,11 +1,11 @@
 {
   "apps": [{
-    "name": "SpotVenue",
+    "name": "HotVenue",
     "script": "./bin/www",
     "instances": 0,
     "exec_mode": "cluster",
     "max_restarts": 5,
-    "max_memory_restart": "500M",
+    "max_memory_restart": "200M",
     "env": {
       "NODE_ENV": "production",
       "SPOTVENUE_SERVER": "appserver"
