@@ -34,4 +34,5 @@ module.exports = {
   importTests,
   importTestSuite,
   email: 'hello@its.me',
+  deviceId: '2b6f0cc904d137be2e1730235f5664094b831186',
 };

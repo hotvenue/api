@@ -114,91 +114,74 @@ module.exports = function videoJob(queue) {
     videoEdit_A(remoteVideoInput, remoteVideoOutput, remoteWatermark, remoteImageOutput, done) {
       const ext = remoteVideoInput.substr(remoteVideoInput.lastIndexOf('.'));
 
-      const tmpFile1 = path.join(configFolder.tmp, uuid.v4()) + ext;
-      const tmpFile2 = path.join(configFolder.tmp, uuid.v4()) + ext;
-      const tmpFile3 = path.join(configFolder.tmp, uuid.v4()) + ext;
-      const tmpFile4 = path.join(configFolder.tmp, uuid.v4()) + ext;
-      const tmpImage = `${path.join(configFolder.tmp, uuid.v4())}.png`;
+      const tmpVideo1 = path.join(configFolder.tmp, uuid.v4()) + ext;
+      const tmpVideo2 = path.join(configFolder.tmp, uuid.v4()) + ext;
+      const tmpVideo3 = path.join(configFolder.tmp, uuid.v4()) + ext;
+
+      const tmpWatermark = `${path.join(configFolder.tmp, uuid.v4())}.png`;
+      const tmpPreview = `${path.join(configFolder.tmp, uuid.v4())}.png`;
 
       log.jobs.silly('Job "videoEdit_A" started');
 
-      cloud.download(remoteWatermark, tmpFile4, (errDownloadWatermark) => {
-        if (errDownloadWatermark) {
-          log.jobs.error('Error while downloading the watermark');
-          log.jobs.debug(errDownloadWatermark);
-
-          return;
-        }
-
-        log.jobs.debug('Watermark downloaded', remoteWatermark);
-
-        cloud.download(remoteVideoInput, tmpFile1, (errVideo) => {
-          if (errVideo) {
-            log.jobs.error('Error while downloading the video');
-            log.jobs.debug(errVideo);
-
-            return;
-          }
-
-          log.jobs.debug('Video downloaded', remoteVideoInput);
-
+      cloud.download(remoteWatermark, tmpWatermark)
+        .then(() => cloud.download(remoteVideoInput, tmpVideo1))
+        .then(() => {
           queue.createMyJob('video-loop', {
-            videoInput: tmpFile1,
-            videoOutput: tmpFile2,
+            videoInput: tmpVideo1,
+            videoOutput: tmpVideo2,
             times: 3,
           }, (/* result */) => {
             log.jobs.debug('Video editing completed');
 
             queue.createMyJob('video-watermark', {
-              videoInput: tmpFile2,
-              videoOutput: tmpFile3,
-              watermark: tmpFile4,
+              videoInput: tmpVideo2,
+              videoOutput: tmpVideo3,
+              watermark: tmpWatermark,
               position: '0:H-h-0',
             }, (/* result */) => {
               log.jobs.debug('Video watermarking completed');
 
-              cloud.upload(tmpFile3, remoteVideoOutput, (errUpload) => {
-                if (errUpload) {
+              cloud.upload(tmpVideo3, remoteVideoOutput)
+                .then(() => {
+                  log.jobs.debug('Video upload completed');
+
+                  queue.createMyJob('video-screenshot', {
+                    videoInput: tmpVideo3,
+                    imageOutput: tmpPreview,
+                  }, (/* result */) => {
+                    log.jobs.debug('Video screenshot completed');
+
+                    cloud.upload(tmpPreview, remoteImageOutput)
+                      .then(() => {
+                        log.jobs.debug('Screenshot upload completed');
+
+                        fs.unlinkSync(tmpVideo1);
+                        fs.unlinkSync(tmpVideo2);
+                        fs.unlinkSync(tmpVideo3);
+                        fs.unlinkSync(tmpWatermark);
+                        fs.unlinkSync(tmpPreview);
+
+                        log.jobs.silly('Job "videoEdit_A" finished');
+
+                        done();
+                      })
+                      .catch((err) => {
+                        log.jobs.debug('Upload failed');
+                        log.jobs.debug(err);
+                      });
+                  }).save();
+                })
+                .catch((err) => {
                   log.jobs.debug('Video upload failed');
-                  log.jobs.debug(errUpload);
-
-                  return;
-                }
-
-                log.jobs.debug('Video upload completed');
-
-                queue.createMyJob('video-screenshot', {
-                  videoInput: tmpFile3,
-                  imageOutput: tmpImage,
-                }, (/* result */) => {
-                  log.jobs.debug('Video screenshot completed');
-
-                  cloud.upload(tmpImage, remoteImageOutput, (errUploadScreenshot) => {
-                    if (errUploadScreenshot) {
-                      log.jobs.debug('Screenshot upload failed');
-                      log.jobs.debug(errUpload);
-
-                      return;
-                    }
-
-                    log.jobs.debug('Screenshot upload completed');
-                  });
-
-                  fs.unlinkSync(tmpFile1);
-                  fs.unlinkSync(tmpFile2);
-                  fs.unlinkSync(tmpFile3);
-                  fs.unlinkSync(tmpFile4);
-                  fs.unlinkSync(tmpImage);
-
-                  log.jobs.silly('Job "videoEdit_A" finished');
-
-                  done();
-                }).save();
-              });
+                  log.jobs.debug(err);
+                });
             }).save();
           }).save();
+        })
+        .catch((err) => {
+          log.jobs.error('Error in the videoEdit_A job while retrieving resources');
+          log.jobs.debug(err);
         });
-      });
     },
   };
 

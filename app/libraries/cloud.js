@@ -41,44 +41,51 @@ const cloud = module.exports = {
     region: awsConfig.ses.region,
   }),
 
-  upload(source, destination, done) {
+  /**
+   *
+   * @param {string} source
+   * @param {string} destination
+   * @return {Promise}
+   */
+  upload(source, destination) {
     let body;
 
     if (typeof source === 'string') {
       body = fs.createReadStream(source);
     }
 
-    cloud.s3
-      .upload({
+    return cloud.s3
+      .putObject({
         Body: body,
         Key: destination,
       })
-      .send(done);
+      .promise();
   },
 
-  download(source, destination, done) {
-    if (typeof destination === 'function') {
-      done = destination; // eslint-disable-line no-param-reassign
-      destination = null; // eslint-disable-line no-param-reassign
-    }
-
-    cloud.s3
+  /**
+   *
+   * @param {string} source
+   * @param {string} destination
+   * @return {Promise}
+   */
+  download(source, destination) {
+    return cloud.s3
       .getObject({
         Key: source,
-      }, (err, data) => {
-        if (err) {
-          log.aws.debug('Error while downloading a file from S3');
-          log.aws.error(err);
-
-          done(err);
-          return;
-        }
-
+      })
+      .promise()
+      .then((data) => {
         if (destination) {
           fs.writeFileSync(destination, data.Body);
         }
 
-        done(null, data.Body);
+        return data.Body;
+      })
+      .catch((err) => {
+        log.aws.debug('Error while downloading a file from S3');
+        log.aws.error(err);
+
+        throw err;
       });
   },
 };

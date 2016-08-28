@@ -15,9 +15,10 @@ module.exports = {
    * @param {string} oldPath - The path where the file is right now
    * @param {string} newPathLocal - The path where the file must be moved during tests
    * @param {string} newPathCloud - The path (URI) where the file must be uploaded
-   * @param {function} after - Something to execute in the end (only in prod)
+   *
+   * @return {Promise}
    */
-  uploadFile(what, when, oldPath, newPathLocal, newPathCloud, after) {
+  uploadFile({ what, when, oldPath, newPathLocal, newPathCloud }) {
     if (!when) {
       throw new EpilogueError(409, `the ${what} you are trying to upload is not valid`);
     }
@@ -31,21 +32,17 @@ module.exports = {
 
         throw new EpilogueError(500);
       }
-    } else {
-      cloud.upload(oldPath, newPathCloud, (err/* , data */) => {
-        if (err) {
-          log.debug(`Error while uploading ${what}`);
-          log.error(err);
 
-          return;
-        }
-
-        fs.unlinkSync(oldPath);
-
-        if (typeof after === 'function') {
-          after();
-        }
-      });
+      return Promise.resolve(true);
     }
+
+    return cloud.upload(oldPath, newPathCloud)
+      .then(() => {
+        fs.unlinkSync(oldPath);
+      })
+      .catch((err) => {
+        log.debug(`Error while uploading ${what}`);
+        log.error(err);
+      });
   },
 };

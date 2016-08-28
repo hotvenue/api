@@ -12,12 +12,10 @@ describe('Device', () => {
   });
 
   it('POST /device should add a device', (done) => {
-    const id = '2b6f0cc904d137be2e1730235f5664094b831186';
-
     common.request(common.server)
       .post('/device')
       .send({
-        id,
+        identifierForVendor: common.deviceId,
       })
       .expect(201)
       .end((err, res) => {
@@ -28,7 +26,7 @@ describe('Device', () => {
         }
 
         common.expect(res.body).to.be.a('object');
-        common.expect(res.body).to.have.property('id').and.equal(id);
+        common.expect(res.body).to.have.property('identifierForVendor').and.equal(common.deviceId);
         common.expect(res.body).to.have.property('createdAt')
             .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')

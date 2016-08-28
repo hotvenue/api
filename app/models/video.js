@@ -34,36 +34,37 @@ module.exports = function createVideo(sequelize, DataTypes) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
         this.setDataValue('extension', ext);
 
-        utils.uploadFile(
-          'video',
-          file.mimetype.match(/^video\//),
-          file.path,
-          path.join(file.destination, this.getDataValue('id') + ext),
-          this.urlOriginalRelative,
-          () => {
-            this.getDevice()
-              .then((device) => device.getLocation())
-              .then((location) => {
-                jobs.videoEdit(
-                  this.urlOriginalRelative,
-                  this.urlOriginalRelative
-                    .replace(configS3.folder.video.original, configS3.folder.video.editedA),
-                  location.urlWatermarkRelative,
-                  this.urlPreviewRelative,
-                  () => {
-                    this.ready = true;
+        utils
+          .uploadFile({
+            what: 'video',
+            when: file.mimetype.match(/^video\//),
+            oldPath: file.path,
+            newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
+            newPathCloud: this.urlOriginalRelative,
+          })
+          .then(() => this.getDevice())
+          .then((device) => device.getLocation())
+          .then((location) => {
+            if (process.env.NODE_ENV !== 'test') {
+              jobs.videoEdit(
+                this.urlOriginalRelative,
+                this.urlOriginalRelative
+                  .replace(configS3.folder.video.original, configS3.folder.video.editedA),
+                location.urlWatermarkRelative,
+                this.urlPreviewRelative,
+                () => {
+                  this.ready = true;
 
-                    this
-                      .save()
-                      .catch((errSave) => {
-                        log.debug('Error while saving the edited video');
-                        log.error(errSave);
-                      });
-                  }
-                );
-              });
-          }
-        );
+                  this
+                    .save()
+                    .catch((errSave) => {
+                      log.debug('Error while saving the edited video');
+                      log.error(errSave);
+                    });
+                }
+              );
+            }
+          });
       },
     },
 

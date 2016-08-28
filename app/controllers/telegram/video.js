@@ -28,17 +28,16 @@ module.exports = {
             ],
           }),
         ])
-        .then(([videoCount, lastVideo]) => {
-          cloud.download(lastVideo.urlPreviewRelative, (err, image) => {
-            if (err) {
-              return;
-            }
-
-            bot.sendMessage(chatId, `
+        .then(([videoCount, lastVideo]) => Promise.all([
+          videoCount,
+          lastVideo,
+          cloud.download(lastVideo.urlPreviewRelative),
+        ]))
+        .then(([videoCount, lastVideo, image]) => {
+          bot.sendMessage(chatId, `
 In the last hour we recorded ${videoCount} ${pluralize('video', videoCount)}
 The last one was this: ${lastVideo.urlEditedA}`);
-            bot.sendPhoto(chatId, image);
-          });
+          bot.sendPhoto(chatId, image);
         });
     };
   },

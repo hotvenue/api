@@ -11,6 +11,8 @@ describe('Video', () => {
     common.request(common.server)
       .post('/video')
       .attach('video', 'test/assets/sample-video.mp4')
+      .field('user[email]', common.email)
+      .field('device[identifierForVendor]', common.deviceId)
       .expect(201)
       .end((err, res) => {
         if (err) {
@@ -27,6 +29,16 @@ describe('Video', () => {
         common.expect(res.body).to.have.property('updatedAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
+        common.expect(res.body).to.have.property('user');
+        common.expect(res.body.user).to.be.a('object');
+        common.expect(res.body.user).to.have.property('id').and.equal(common.user.id);
+        common.expect(res.body.user).to.have.property('email').and.equal(common.email);
+
+        common.expect(res.body).to.have.property('device');
+        common.expect(res.body.device).to.be.a('object');
+        common.expect(res.body.device).to.have.property('identifierForVendor')
+          .and.equal(common.deviceId);
+
         common.video = res.body;
 
         const videoPath = path.join(config.get('folder').upload,
@@ -42,10 +54,30 @@ describe('Video', () => {
       });
   });
 
+  it('POST /video should refuse without user', (done) => {
+    common.request(common.server)
+      .post('/video')
+      .attach('video', 'test/assets/sample-video.mp4')
+      .field('device[identifierForVendor]', common.deviceId)
+      .expect(500)
+      .end(done);
+  });
+
+  it('POST /video should refuse without device', (done) => {
+    common.request(common.server)
+      .post('/video')
+      .attach('video', 'test/assets/sample-video.mp4')
+      .field('user[email]', common.email)
+      .expect(500)
+      .end(done);
+  });
+
   it('POST /video should refuse to upload the image', (done) => {
     common.request(common.server)
       .post('/video')
       .attach('video', 'test/assets/sample-image.jpg')
+      .field('user[email]', common.email)
+      .field('device[identifierForVendor]', common.deviceId)
       .expect(409)
       .end(done);
   });
@@ -73,36 +105,6 @@ describe('Video', () => {
       .expect(200)
       .expect([])
       .end(done);
-  });
-
-  it('POST /video user and location should also populate the them', (done) => {
-    common.request(common.server)
-      .post('/video')
-      .attach('video', 'test/assets/sample-video.mp4')
-      .field('user[email]', common.email)
-      .field('locationId', common.location.id)
-      .expect(201)
-      .end((err, res) => {
-        if (err) {
-          done(err);
-
-          return;
-        }
-
-        common.expect(res.body).to.be.a('object');
-        common.expect(res.body).to.have.property('id');
-
-        common.expect(res.body).to.have.property('user');
-        common.expect(res.body.user).to.be.a('object');
-        common.expect(res.body.user).to.have.property('id').and.equal(common.user.id);
-        common.expect(res.body.user).to.have.property('email').and.equal(common.email);
-
-        common.expect(res.body).to.have.property('location');
-        common.expect(res.body.location).to.be.a('object');
-        common.expect(res.body.location).to.have.property('id').and.equal(common.location.id);
-
-        done();
-      });
   });
 
   it('PUT /video/:id should return an error', (done) => {

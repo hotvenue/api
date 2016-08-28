@@ -20,7 +20,9 @@ app.use((req, res, next) => {
 
 // error handlers
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-  log.server.error(err);
+  if (process.env.NODE_ENV !== 'test') {
+    log.server.error(err);
+  }
 
   res.status(err.status || 500);
   res.json({

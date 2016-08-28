@@ -32,13 +32,13 @@ module.exports = function createLocation(sequelize, DataTypes) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
         this.setDataValue('extension', ext);
 
-        utils.uploadFile(
-          'location frame image',
-          file.mimetype.match(/^image\//),
-          file.path,
-          path.join(file.destination, this.getDataValue('id') + ext),
-          this.urlFrameRelative
-        );
+        utils.uploadFile({
+          what: 'location frame image',
+          when: file.mimetype.match(/^image\//),
+          oldPath: file.path,
+          newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
+          newPathCloud: this.urlFrameRelative,
+        });
       },
     },
 
@@ -56,13 +56,13 @@ module.exports = function createLocation(sequelize, DataTypes) {
        * @param {string} file.size - Filesize in bytes
        */
       set(file) {
-        utils.uploadFile(
-          'location watermark image',
-          file.mimetype === 'image/png',
-          file.path,
-          path.join(file.destination, `${this.getDataValue('id')}.png`),
-          this.urlWatermarkRelative
-        );
+        utils.uploadFile({
+          what: 'location watermark image',
+          when: file.mimetype === 'image/png',
+          oldPath: file.path,
+          newPathLocal: path.join(file.destination, `${this.getDataValue('id')}.png`),
+          newPathCloud: this.urlWatermarkRelative,
+        });
       },
     },
 

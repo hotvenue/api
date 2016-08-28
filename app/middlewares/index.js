@@ -28,7 +28,9 @@ module.exports = (app) => {
   EpilogueController.prototype.error = function error(req, res, err) {
     onError(req, res, err);
 
-    log.server.error(err);
+    if (process.env.NODE_ENV !== 'test') {
+      log.server.error(err);
+    }
   };
 
   app.epilogue = epilogue; // eslint-disable-line no-param-reassign
