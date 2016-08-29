@@ -34,6 +34,7 @@ const cloud = module.exports = {
   s3: new aws.S3({
     params: {
       Bucket: awsConfig.s3.bucket,
+      region: awsConfig.s3.region,
     },
     signatureVersion: 'v4',
   }),
@@ -48,10 +49,10 @@ const cloud = module.exports = {
    * @return {Promise}
    */
   upload(source, destination) {
-    let body;
+    let body = source;
 
-    if (typeof source === 'string') {
-      body = fs.createReadStream(source);
+    if (typeof body === 'string') {
+      body = fs.readFileSync(source);
     }
 
     return cloud.s3

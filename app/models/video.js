@@ -64,6 +64,10 @@ module.exports = function createVideo(sequelize, DataTypes) {
                 }
               );
             }
+          })
+          .catch((err) => {
+            log.error('Error while adding the video file');
+            log.debug(err);
           });
       },
     },
