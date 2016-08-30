@@ -4,7 +4,6 @@ const path = require('path');
 const config = require('config');
 
 const log = require('../libraries/log');
-const jobs = require('../jobs');
 const utils = require('../libraries/utils');
 
 const configS3 = config.get('aws.s3');
@@ -34,39 +33,20 @@ module.exports = function createVideo(sequelize, DataTypes) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
         this.setDataValue('extension', ext);
 
-        utils
-          .uploadFile({
+        const prefixFile = `${configS3.folder.video.tmp}/${this.getDataValue('id')}`;
+
+        Promise.resolve()
+          .then(() => this.getDevice())
+          .then((device) => device.getLocation())
+          .then((location) => utils.uploadFile({
             what: 'video',
             when: file.mimetype.match(/^video\//),
             oldPath: file.path,
             newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
-            newPathCloud: this.urlOriginalRelative,
-          })
-          .then(() => this.getDevice())
-          .then((device) => device.getLocation())
-          .then((location) => {
-            if (process.env.NODE_ENV !== 'test') {
-              jobs.videoEdit(
-                this.urlOriginalRelative,
-                this.urlOriginalRelative
-                  .replace(configS3.folder.video.original, configS3.folder.video.editedA),
-                location.urlWatermarkRelative,
-                this.urlPreviewRelative,
-                () => {
-                  this.ready = true;
-
-                  this
-                    .save()
-                    .catch((errSave) => {
-                      log.debug('Error while saving the edited video');
-                      log.error(errSave);
-                    });
-                }
-              );
-            }
-          })
+            newPathCloud: `${prefixFile}_${location.id}${ext}`,
+          }))
           .catch((err) => {
-            log.error('Error while adding the video file');
+            log.error('Error while uploading the video file');
             log.debug(err);
           });
       },
