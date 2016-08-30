@@ -67,6 +67,12 @@ function upload(source, destination) {
     .promise();
 }
 
+function deleteFile(source) {
+  return s3
+    .deleteObject(source)
+    .promise();
+}
+
 function doFfprobe(filename) {
   const args = [
     '-v', 'quiet',
@@ -221,6 +227,8 @@ exports.handler = (event, context, done) => {
     .then(() => { console.log('Video uploaded!'); })
     .then(() => upload(tmpThumbnail, `app/video/preview/${getVideoId(source)}${ext2beImage}`))
     .then(() => { console.log('Thumbnail uploaded!'); })
+    .then(() => deleteFile(source))
+    .then(() => { console.log('Original video deleted!'); })
     .then(() => done())
     .catch((err) => { console.error(err); });
 };
