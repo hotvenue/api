@@ -67,17 +67,6 @@ function upload(source, destination) {
     .promise();
 }
 
-function chmodFiles() {
-  if (process.env.NODE_ENV === 'test') {
-    return true;
-  }
-
-  fs.chmodSync(ffprobe, 0o755);
-  fs.chmodSync(ffmpeg, 0o755);
-
-  return true;
-}
-
 function doFfprobe(filename) {
   const args = [
     '-v', 'quiet',
@@ -215,8 +204,6 @@ exports.handler = (event, context, done) => {
     .then(() => { console.log('File is valid!'); })
     .then(() => download(source, tmpOriginal))
     .then(() => { console.log('Video downloaded!'); })
-    .then(() => chmodFiles())
-    .then(() => { console.log('Chmoded files!'); })
     .then(() => doFfprobe(tmpOriginal))
     .then((metadata) => validateVideoDuration(metadata))
     .then(() => { console.log('File has a valid duration!'); })
