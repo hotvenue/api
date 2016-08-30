@@ -16,6 +16,8 @@ const configEmail = config.get('email');
 const configFiletype = config.get('filetype');
 
 module.exports = function maidJob() {
+  const limit = 10;
+
   function maidSendVideo() {
     return models.video
       .findAll({
@@ -23,6 +25,7 @@ module.exports = function maidJob() {
           sent: false,
           ready: true,
         },
+        limit,
         include: [
           { model: models.user },
           { model: models.device, include: [{ model: models.location }] },
@@ -83,6 +86,7 @@ module.exports = function maidJob() {
         where: {
           ready: false,
         },
+        limit,
         include: [
           { model: models.user },
           { model: models.device, include: [{ model: models.location }] },
