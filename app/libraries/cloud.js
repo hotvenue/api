@@ -66,7 +66,7 @@ const cloud = module.exports = {
   /**
    *
    * @param {string} source
-   * @param {string} destination
+   * @param {string?} destination
    * @return {Promise}
    */
   download(source, destination) {
@@ -81,12 +81,17 @@ const cloud = module.exports = {
         }
 
         return data.Body;
-      })
-      .catch((err) => {
-        log.aws.debug('Error while downloading a file from S3');
-        log.aws.error(err);
-
-        throw err;
       });
+  },
+
+  copy(source, destination) {
+    source = `${awsConfig.s3.bucket}/${source}`; // eslint-disable-line no-param-reassign
+
+    return cloud.s3
+      .copyObject({
+        Key: destination,
+        CopySource: source,
+      })
+      .promise();
   },
 };
