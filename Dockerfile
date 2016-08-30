@@ -12,6 +12,7 @@ ENV appDir /var/www/app/current
 RUN apt-get update
 
 RUN apt-get install -y -q --no-install-recommends \
+    ca-certificates \
     curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -y autoclean
