@@ -206,6 +206,8 @@ exports.handler = (event, context, done) => {
     .then(() => doFfprobe(tmpOriginal))
     .then((metadata) => validateVideoDuration(metadata))
     .then(() => { console.log('File has a valid duration!'); })
+    .then(() => upload(tmpOriginal, `app/video/original/${getVideoId(source)}${ext2beVideo}`))
+    .then(() => { console.log('Original video uploaded!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
       Key: `app/location/watermark/${getLocationId(source)}${extWatermark}`,
