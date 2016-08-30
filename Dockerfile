@@ -8,26 +8,8 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 # Set environment variables
 ENV appDir /var/www/app/current
 
-# Adding the source for ffmpeg
-RUN echo deb http://ftp.uk.debian.org/debian jessie-backports main >> /etc/apt/sources.list
-
 # Run updates and install deps
 RUN apt-get update
-
-RUN apt-get install -y -q --no-install-recommends \
-    apt-transport-https \
-    build-essential \
-    ca-certificates \
-    curl \
-    g++ \
-    gcc \
-    git \
-    make \
-    sudo \
-    wget \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get -y autoclean
 
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.2.2
@@ -58,7 +40,7 @@ RUN npm i -g pm2
 ADD . /var/www/app/current
 
 #Expose the port
-EXPOSE 4500
+EXPOSE 3000
 
 CMD ["npm", "run", "pm2:production", "--", "--no-daemon"]
 
