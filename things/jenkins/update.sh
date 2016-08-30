@@ -17,8 +17,6 @@ if [ "${DESIRED_COUNT}" = "0" ]; then
     DESIRED_COUNT="1"
 fi
 
-echo "${TASK_REVISION}"
-
 aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_FAMILY}:${TASK_REVISION} --desired-count ${DESIRED_COUNT}
 
 rm ${TASK_FAMILY}-v_${BUILD_NUMBER}.json
