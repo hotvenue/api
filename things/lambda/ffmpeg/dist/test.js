@@ -4,6 +4,9 @@
 
 process.env.NODE_ENV = 'test';
 
+process.env.AWS_ACCESS_KEY_ID = 'AKIAISQ2S3UPLLVD5GUA';
+process.env.AWS_SECRET_ACCESS_KEY = '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';
+
 const lambda = require('./index').handler;
 const event = require('./test-event.json');
 

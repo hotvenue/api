@@ -89,6 +89,8 @@ function doFfprobe(filename) {
           return;
         }
 
+        console.log('FFProbe done!');
+
         resolve(JSON.parse(stdout));
       })
       .on('error', reject);
@@ -197,17 +199,27 @@ exports.handler = (event, context, done) => {
   const tmpThumbnail = path.join(tmpDir, `thumbnail${ext2beImage}`);
 
   return Promise.resolve()
+    .then(() => { console.log(process.env); })
     .then(() => validateFile(source))
+    .then(() => { console.log('File is valid!'); })
     .then(() => download(source, tmpOriginal))
+    .then(() => { console.log('Video downloaded!'); })
     .then(() => doFfprobe(tmpOriginal))
     .then((metadata) => validateVideoDuration(metadata))
+    .then(() => { console.log('File has a valid duration!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
       Key: `app/location/watermark/${getLocationId(source)}${extWatermark}`,
     }, tmpWatermark))
+    .then(() => { console.log('Watermark downloaded!'); })
     .then(() => doFfmpegA(tmpOriginal, tmpWatermark, tmpVideo))
+    .then(() => { console.log('Video "A" created!'); })
     .then(() => doThumbnail(tmpVideo, tmpThumbnail))
+    .then(() => { console.log('Thumbnail created!'); })
     .then(() => upload(tmpVideo, `app/video/edited-A/${getVideoId(source)}${ext2beVideo}`))
+    .then(() => { console.log('Video uploaded!'); })
     .then(() => upload(tmpThumbnail, `app/video/preview/${getVideoId(source)}${ext2beImage}`))
+    .then(() => { console.log('Thumbnail uploaded!'); })
+    .then(() => done())
     .catch((err) => { console.error(err); });
 };
