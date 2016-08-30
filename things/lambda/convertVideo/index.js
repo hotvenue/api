@@ -199,7 +199,6 @@ exports.handler = (event, context, done) => {
   const tmpThumbnail = path.join(tmpDir, `thumbnail${ext2beImage}`);
 
   return Promise.resolve()
-    .then(() => { console.log(process.env); })
     .then(() => validateFile(source))
     .then(() => { console.log('File is valid!'); })
     .then(() => download(source, tmpOriginal))
