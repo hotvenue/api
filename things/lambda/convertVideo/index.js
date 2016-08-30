@@ -102,7 +102,8 @@ function doFfprobe(filename) {
 }
 
 function doFfmpegA(original, watermark, video) {
-  const tmpVideo1 = path.join(tmpDir, 'video-tmp-1');
+  const ext = path.extname(original);
+  const tmpVideo1 = path.join(tmpDir, `video-tmp-1${ext}`);
 
   const args1 = [
     '-i', original,
