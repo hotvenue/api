@@ -2,7 +2,7 @@
 
 cd things/lambda/convertVideo
 
-chmod +x ./ffmprobe
+chmod +x ./ffprobe
 chmod +x ./ffmpeg
 
 zip -r convertVideo.zip .
