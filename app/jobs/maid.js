@@ -29,7 +29,7 @@ module.exports = function maidJob() {
         ],
       })
       .then((videos) => {
-        log.jobs.info(`Got ${videos.length} videos to send`);
+        log.jobs.debug(`Got ${videos.length} videos to send`);
 
         return Promise.all(videos.map((video2parse) => {
           if (video2parse.user != null) {
