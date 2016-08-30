@@ -44,13 +44,15 @@ describe('Video', () => {
         const videoPath = path.join(config.get('folder').upload,
           common.video.id + common.video.extension);
 
-        const videoStat = fs.statSync(videoPath);
+        setTimeout(() => {
+          const videoStat = fs.statSync(videoPath);
 
-        common.expect(videoStat.isFile()).to.equal(true);
+          common.expect(videoStat.isFile()).to.equal(true);
 
-        fs.unlinkSync(videoPath);
+          fs.unlinkSync(videoPath);
 
-        done();
+          done();
+        }, 1000);
       });
   });
 

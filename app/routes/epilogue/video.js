@@ -29,6 +29,10 @@ module.exports = {
             return context.error(500, 'no device specified');
           }
 
+          if (!videoFile.mimetype.match(/^video\//)) {
+            return context.error(409, 'the video you are trying to upload isn\'t valid');
+          }
+
           return models.user
             .findCreateFind({
               where: req.body.user,

@@ -110,6 +110,32 @@ describe('Location', () => {
       });
   });
 
+  it('PUT /device/:id should add the location to the device', (done) => {
+    common.request(common.server)
+      .put(`/device/${common.device.id}`)
+      .send({
+        locationId: common.location.id,
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+
+          return;
+        }
+
+        common.expect(res.body).to.be.a('object');
+        common.expect(res.body).to.have.a.property('location').and.be.a('object');
+
+        common.expect(res.body.location).to.have.a.property('name')
+          .and.equal(common.location.name);
+
+        common.device = res.body;
+
+        done();
+      });
+  });
+
   it('DELETE /location/:id should return an error', (done) => {
     common.request(common.server)
       .delete(`/location/${common.location.id}`)

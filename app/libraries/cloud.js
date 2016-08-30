@@ -7,8 +7,6 @@ const elasticsearch = require('elasticsearch');
 const awsConfig = config.get('aws');
 const esClient = elasticsearch.Client;
 
-const log = require('./log');
-
 let iam = 'webserver';
 if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'appserver') {
   iam = 'appserver';

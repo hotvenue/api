@@ -1,5 +1,3 @@
-/* eslint-extends es2015/node */
-
 'use strict';
 
 process.env.PATH += `:${process.env.LAMBDA_TASK_ROOT}`;

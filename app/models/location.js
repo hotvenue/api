@@ -34,7 +34,6 @@ module.exports = function createLocation(sequelize, DataTypes) {
 
         utils.uploadFile({
           what: 'location frame image',
-          when: file.mimetype.match(/^image\//),
           oldPath: file.path,
           newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
           newPathCloud: this.urlFrameRelative,
@@ -58,7 +57,6 @@ module.exports = function createLocation(sequelize, DataTypes) {
       set(file) {
         utils.uploadFile({
           what: 'location watermark image',
-          when: file.mimetype === 'image/png',
           oldPath: file.path,
           newPathLocal: path.join(file.destination, `${this.getDataValue('id')}.png`),
           newPathCloud: this.urlWatermarkRelative,

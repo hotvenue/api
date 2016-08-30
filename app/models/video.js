@@ -40,14 +40,14 @@ module.exports = function createVideo(sequelize, DataTypes) {
           .then((device) => device.getLocation())
           .then((location) => utils.uploadFile({
             what: 'video',
-            when: file.mimetype.match(/^video\//),
             oldPath: file.path,
             newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
             newPathCloud: `${prefixFile}_${location.id}${ext}`,
           }))
           .catch((err) => {
             log.error('Error while uploading the video file');
-            log.debug(err);
+
+            throw err;
           });
       },
     },
