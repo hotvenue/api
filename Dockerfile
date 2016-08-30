@@ -12,7 +12,7 @@ ENV appDir /var/www/app/current
 RUN apt-get update
 
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 6.2.2
+ENV NODE_VERSION 6.5.0
 
 # Install nvm with node and npm
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh | bash \
