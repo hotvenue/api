@@ -133,11 +133,20 @@ function doFfmpegA(original, watermark, video) {
   return Promise.resolve()
     .then(() => new Promise((resolve, reject) => {
       childProcess
+        .execFile(ffmpeg, [], options)
+        .on('message', (msg) => { console.log(msg); })
+        .on('error', reject)
+        .on('close', resolve);
+    }))
+    .then(() => { console.log('First step'); })
+    .then(() => new Promise((resolve, reject) => {
+      childProcess
         .execFile(ffmpeg, args1, options)
         .on('message', (msg) => { console.log(msg); })
         .on('error', reject)
         .on('close', resolve);
     }))
+    .then(() => { console.log('Second step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
         .execFile(ffmpeg, args2, options)
@@ -171,6 +180,8 @@ function doThumbnail(video, thumbnail) {
 }
 
 function validateVideoDuration(metadata) {
+  console.log(metadata);
+
   const duration = parseFloat(metadata.format.duration);
 
   if (duration > 10) {
