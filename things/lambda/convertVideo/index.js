@@ -113,7 +113,7 @@ function doFfmpegA(original, watermark, video) {
   ];
 
   const args2 = [
-    '-i', original,
+    '-i', tmpVideo1,
     '-i', watermark,
     '-filter_complex', 'overlay=0:H-h-0',
     '-an',
