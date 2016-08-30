@@ -4,6 +4,8 @@ const config = require('config');
 const multer = require('multer');
 
 const configData = config.get('folder');
+const configFiletype = config.get('filetype');
+
 const upload = multer({ dest: configData.upload });
 
 module.exports = {
@@ -24,7 +26,8 @@ module.exports = {
             return context.error(409, 'the frame you are trying to upload isn\'t valid');
           }
 
-          if (imageWatermarkFile.mimetype !== 'image/png') {
+          if (imageWatermarkFile.mimetype !==
+            `image/${configFiletype.extension.watermark.replace('.', '')}`) {
             return context.error(409, 'the watermark you are trying to upload isn\'t valid');
           }
 

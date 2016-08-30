@@ -13,6 +13,7 @@ const models = require('../models');
 
 const configJobs = config.get('jobs');
 const configEmail = config.get('email');
+const configFiletype = config.get('filetype');
 
 module.exports = function maidJob() {
   function maidSendVideo() {
@@ -116,7 +117,7 @@ module.exports = function maidJob() {
           const tmpOriginal = `app/video/tmp-original/${id}_${locationId}${ext}`;
           const original = `app/video/original/${id}${ext}`;
           const editedA = `app/video/edited-A/${id}${ext}`;
-          const preview = `app/video/preview/${id}.jpg`;
+          const preview = `app/video/preview/${id}${configFiletype.extension.preview}`;
 
           return Promise.resolve()
             .then(() => cloud.download(tmpOriginal))

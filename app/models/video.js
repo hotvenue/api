@@ -7,6 +7,7 @@ const log = require('../libraries/log');
 const utils = require('../libraries/utils');
 
 const configS3 = config.get('aws.s3');
+const configFiletype = config.get('filetype');
 
 module.exports = function createVideo(sequelize, DataTypes) {
   const video = sequelize.define('video', {
@@ -31,7 +32,8 @@ module.exports = function createVideo(sequelize, DataTypes) {
        */
       set(file) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
-        this.setDataValue('extension', ext);
+        this.setDataValue('extension',
+          process.env.NODE_ENV === 'test' ? ext : configFiletype.extension.video);
 
         const prefixFile = `${configS3.folder.video.tmp}/${this.getDataValue('id')}`;
 
@@ -116,7 +118,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.video.preview,
-          `${this.getDataValue('id')}.jpg`,
+          `${this.getDataValue('id')}${configFiletype.extension.preview}`,
         ].join('/');
       },
     },
