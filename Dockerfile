@@ -11,6 +11,11 @@ ENV appDir /var/www/app/current
 # Run updates and install deps
 RUN apt-get update
 
+RUN apt-get install -y -q --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get -y autoclean
+
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.5.0
 
