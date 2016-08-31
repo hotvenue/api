@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('config');
+const moment = require('moment');
 const request = require('request');
 const md = require('markdown-it')();
 
@@ -38,6 +39,8 @@ module.exports = function maidJob() {
           if (video2parse.user != null) {
             log.jobs.info(`Sending email to ${video2parse.user.email}`);
 
+            const date = moment(video2parse.createdAt).format('YYYY-MM-DD_HH-mm-ss');
+
             return email
               .send({
                 from: configEmail.from,
@@ -53,7 +56,7 @@ module.exports = function maidJob() {
                     .replace(/\$\{HASHTAG}\$/g, video2parse.device.location.hashtag)
                 ),
                 attachments: [{
-                  filename: 'video.mp4',
+                  filename: `video-${date}${video2parse.extension}`,
                   content: request(video2parse.urlEditedA),
                 }],
               })
