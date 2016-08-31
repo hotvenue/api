@@ -105,11 +105,6 @@ function doFfmpegA(original, watermark, video) {
   const ext = path.extname(original);
   const tmpVideo1 = path.join(tmpDir, `video-tmp-1${ext}`);
 
-  console.log(original);
-  console.log(watermark);
-  console.log(video);
-  console.log(tmpVideo1);
-
   const args1 = [
     '-i', original,
     '-i', original,
@@ -131,21 +126,6 @@ function doFfmpegA(original, watermark, video) {
   };
 
   return Promise.resolve()
-    .then(() => new Promise((resolve, reject) => {
-      childProcess
-        .execFile(ffmpeg, [], options, (err, stdout, stderr) => {
-          if (err) {
-            reject(err);
-
-            return;
-          }
-
-          console.log(stdout);
-          console.log(stderr);
-
-          resolve();
-        });
-    }))
     .then(() => { console.log('First step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
@@ -204,8 +184,6 @@ function doThumbnail(video, thumbnail) {
 }
 
 function validateVideoDuration(metadata) {
-  console.log(metadata);
-
   const duration = parseFloat(metadata.format.duration);
 
   if (duration > 10) {
