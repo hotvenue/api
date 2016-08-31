@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const aws = require('aws-sdk');
 const path = require('path');
+const sharp = require('sharp');
 const config = require('config');
 const childProcess = require('child_process');
 
@@ -21,9 +22,21 @@ const ffmpeg = process.env.NODE_ENV === 'test' ?
 
 let s3;
 
-function validateFile(source) {
-  const uuidRegex = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+const uuidRegex = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+
+function validateVideoFile(source) {
   const filenameRegex = new RegExp(`${uuidRegex}_${uuidRegex}\.[a-z]+`);
+  const filename = path.basename(source.Key);
+
+  if (!filename.match(filenameRegex)) {
+    throw new Error('Invalid filename');
+  }
+
+  return true;
+}
+
+function validateImageFile(source, ext) {
+  const filenameRegex = new RegExp(`${uuidRegex}\\${ext}`);
   const filename = path.basename(source.Key);
 
   if (!filename.match(filenameRegex)) {
@@ -37,8 +50,12 @@ function getVideoId(source) {
   return path.basename(source.Key).split('.')[0].split('_')[0];
 }
 
-function getLocationId(source) {
+function getLocationIdFromVideo(source) {
   return path.basename(source.Key).split('.')[0].split('_')[1];
+}
+
+function getLocationIdFromImage(source) {
+  return path.basename(source.Key).split('.')[0];
 }
 
 function download(source, destination) {
@@ -187,6 +204,25 @@ function doThumbnail(video, thumbnail) {
   });
 }
 
+function resizeImage(source, destination, [sizeWidth, sizeHeight]) {
+  const sizeRatio = sizeWidth / sizeHeight;
+
+  const image = sharp(source);
+
+  return image
+    .metadata()
+    .then((metadata) => {
+      const ratio = metadata.width / metadata.height;
+
+      if (ratio > sizeRatio) {
+        return image.resize(sizeWidth);
+      }
+
+      return image.resize(null, sizeHeight);
+    })
+    .toFile(destination);
+}
+
 function validateVideoDuration(metadata) {
   const duration = parseFloat(metadata.format.duration);
 
@@ -197,7 +233,8 @@ function validateVideoDuration(metadata) {
   return true;
 }
 
-exports.handler = (event, context, done) => {
+// eslint-disable-next-line no-unused-vars
+function handlerVideo(event, context, done) {
   const record = event.Records[0];
   const s3Event = record.s3;
   const source = {
@@ -205,14 +242,8 @@ exports.handler = (event, context, done) => {
     Key: s3Event.object.key,
   };
 
-  s3 = new aws.S3({
-    params: {
-      region: record.awsRegion,
-      Bucket: s3Event.bucket.name,
-    },
-
-    signatureVersion: 'v4',
-  });
+  const videoId = getVideoId(source);
+  const locationId = getLocationIdFromVideo(source);
 
   const ext = path.extname(source.Key);
 
@@ -226,7 +257,7 @@ exports.handler = (event, context, done) => {
   const tmpThumbnail = path.join(tmpDir, `thumbnail${ext2beImage}`);
 
   return Promise.resolve()
-    .then(() => validateFile(source))
+    .then(() => validateVideoFile(source))
     .then(() => { console.log('File is valid!'); })
     .then(() => download(source, tmpOriginal))
     .then(() => { console.log('Video downloaded!'); })
@@ -234,11 +265,11 @@ exports.handler = (event, context, done) => {
     .then((metadata) => validateVideoDuration(metadata))
     .then(() => { console.log('File has a valid duration!'); })
     .then(() => upload(tmpOriginal,
-      `${configAws.s3.folder.video.original}/${getVideoId(source)}${ext2beVideo}`))
+      `${configAws.s3.folder.video.original}/${videoId}${ext2beVideo}`))
     .then(() => { console.log('Original video uploaded!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
-      Key: `${configAws.s3.folder.location.watermark}/${getLocationId(source)}${extWatermark}`,
+      Key: `${configAws.s3.folder.location.watermark}/${locationId}${extWatermark}`,
     }, tmpWatermark))
     .then(() => { console.log('Watermark downloaded!'); })
     .then(() => doFfmpegA(tmpOriginal, tmpWatermark, tmpVideo))
@@ -246,13 +277,93 @@ exports.handler = (event, context, done) => {
     .then(() => doThumbnail(tmpVideo, tmpThumbnail))
     .then(() => { console.log('Thumbnail created!'); })
     .then(() => upload(tmpVideo,
-      `${configAws.s3.folder.video.editedA}/${getVideoId(source)}${ext2beVideo}`))
+      `${configAws.s3.folder.video.editedA}/${videoId}${ext2beVideo}`))
     .then(() => { console.log('Video uploaded!'); })
     .then(() => upload(tmpThumbnail,
-      `${configAws.s3.folder.video.preview}/${getVideoId(source)}${ext2beImage}`))
+      `${configAws.s3.folder.video.preview}/${videoId}${ext2beImage}`))
     .then(() => { console.log('Thumbnail uploaded!'); })
     .then(() => deleteFile(source))
     .then(() => { console.log('Original video deleted!'); })
     .then(() => done())
     .catch((err) => { console.error(err); });
+}
+
+function handlerImage(what, event, context, done) {
+  const record = event.Records[0];
+  const s3Event = record.s3;
+  const source = {
+    Bucket: s3Event.bucket.name,
+    Key: s3Event.object.key,
+  };
+
+  const id = getLocationIdFromImage(source);
+  const ext = path.extname(source.Key);
+  const ext2be = configApp.extension[what];
+
+  const sizes = configApp.location[what].sizes;
+  const sizeKeys = Object.keys(sizes);
+
+  const tmpOriginal = path.join(tmpDir, `original${ext}`);
+  const tmpImage = {};
+  sizeKeys.forEach((sizeKey) => {
+    tmpImage[sizeKey] = path.join(tmpDir, `image${sizeKey}${ext2be}`);
+  });
+
+  return Promise.resolve()
+    .then(() => validateImageFile(source, ext))
+    .then(() => { console.log('File is valid!'); })
+    .then(() => download(source, tmpOriginal))
+    .then(() => { console.log('Image downloaded!'); })
+    .then(() => Promise.all(sizeKeys.map((sizeKey) =>
+      resizeImage(tmpOriginal, tmpImage[sizeKey], sizes[sizeKey]))))
+    .then(() => { console.log('Image resized!'); })
+    .then(() => Promise.all(sizeKeys.map((sizeKey) =>
+      upload(tmpImage[sizeKey],
+        `${configAws.s3.folder.location[what]}/${id}@${sizeKey}${ext2be}`))))
+    .then(() => { console.log('Images uploaded!'); })
+    .then(() => upload(tmpOriginal, `${configAws.s3.folder.location[what]}/${id}${ext}`))
+    .then(() => { console.log('Original image uploaded!'); })
+    .then(() => deleteFile(source))
+    .then(() => { console.log('Original image deleted!'); })
+    .then(() => done())
+    .catch((err) => { console.error(err); });
+}
+
+// eslint-disable-next-line no-unused-vars
+function handlerFrame(event, context, done) {
+  return handlerImage('frame', event, context, done);
+}
+
+// eslint-disable-next-line no-unused-vars
+function handlerWatermark(event, context, done) {
+  return handlerImage('location', event, context, done);
+}
+
+exports.handler = (event, context, done) => {
+  const record = event.Records[0];
+  const s3Event = record.s3;
+  const key = s3Event.object.key;
+
+  const folder = path.dirname(key);
+  const handlerSwitch = {
+    [configAws.s3.folder.video.tmp]: 'handlerVideo',
+    [configAws.s3.folder.location.tmpFrame]: 'handlerFrame',
+    [configAws.s3.folder.location.tmpWatermark]: 'handlerWatermark',
+  };
+
+  s3 = new aws.S3({
+    params: {
+      region: record.awsRegion,
+      Bucket: s3Event.bucket.name,
+    },
+
+    signatureVersion: 'v4',
+  });
+
+  if (typeof handlerSwitch[folder] === 'undefined') {
+    return;
+  }
+
+  console.log(`Starting ${handlerSwitch[folder]}`);
+  handlerSwitch[folder](event, context, done);
 };

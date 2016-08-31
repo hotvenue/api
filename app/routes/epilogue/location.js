@@ -22,12 +22,11 @@ module.exports = {
           const imageFrameFile = req.files.frame[0];
           const imageWatermarkFile = req.files.watermark[0];
 
-          if (!imageFrameFile.mimetype.match(/^image\//)) {
+          if (!imageFrameFile.mimetype.match(configApp.location.frame.isValid)) {
             return context.error(409, 'the frame you are trying to upload isn\'t valid');
           }
 
-          if (imageWatermarkFile.mimetype !==
-            `image/${configApp.extension.watermark.replace('.', '')}`) {
+          if (!imageWatermarkFile.mimetype.match(configApp.location.watermark.isValid)) {
             return context.error(409, 'the watermark you are trying to upload isn\'t valid');
           }
 
