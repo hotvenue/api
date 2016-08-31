@@ -233,7 +233,6 @@ function validateVideoDuration(metadata) {
   return true;
 }
 
-// eslint-disable-next-line no-unused-vars
 function handlerVideo(event, context, done) {
   const record = event.Records[0];
   const s3Event = record.s3;
@@ -329,12 +328,10 @@ function handlerImage(what, event, context, done) {
     .catch((err) => { console.error(err); });
 }
 
-// eslint-disable-next-line no-unused-vars
 function handlerFrame(event, context, done) {
   return handlerImage('frame', event, context, done);
 }
 
-// eslint-disable-next-line no-unused-vars
 function handlerWatermark(event, context, done) {
   return handlerImage('location', event, context, done);
 }
@@ -346,9 +343,9 @@ exports.handler = (event, context, done) => {
 
   const folder = path.dirname(key);
   const handlerSwitch = {
-    [configAws.s3.folder.video.tmp]: 'handlerVideo',
-    [configAws.s3.folder.location.tmpFrame]: 'handlerFrame',
-    [configAws.s3.folder.location.tmpWatermark]: 'handlerWatermark',
+    [configAws.s3.folder.video.tmp]: handlerVideo,
+    [configAws.s3.folder.location.tmpFrame]: handlerFrame,
+    [configAws.s3.folder.location.tmpWatermark]: handlerWatermark,
   };
 
   s3 = new aws.S3({
@@ -364,6 +361,6 @@ exports.handler = (event, context, done) => {
     return;
   }
 
-  console.log(`Starting ${handlerSwitch[folder]}`);
+  console.log(`Starting ${handlerSwitch[folder].name}`);
   handlerSwitch[folder](event, context, done);
 };
