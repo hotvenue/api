@@ -1,0 +1,16 @@
+{
+  "name": "convertVideo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "npm run pretest",
+    "postbuild": "chmod +x ./ffprobe && chmod +x ./ffmpeg && zip -r convertVideo.zip .",
+    "pretest": "npm run pretest:cp && npm run pretest:install",
+    "pretest:cp": "cp -r ../../../config .",
+    "pretest:install": "npm install",
+    "test": "node test"
+  },
+  "dependencies": {
+    "config": "^1.20.1"
+  }
+}

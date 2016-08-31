@@ -6,7 +6,7 @@ const config = require('config');
 const utils = require('../libraries/utils');
 
 const configS3 = config.get('aws.s3');
-const configFiletype = config.get('filetype');
+const configApp = config.get('app');
 
 module.exports = function createLocation(sequelize, DataTypes) {
   const location = sequelize.define('location', {
@@ -60,7 +60,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
           what: 'location watermark image',
           oldPath: file.path,
           newPathLocal: path.join(file.destination,
-            `${this.getDataValue('id')}${configFiletype.extension.watermark}`),
+            `${this.getDataValue('id')}${configApp.extension.watermark}`),
           newPathCloud: this.urlWatermarkRelative,
         });
       },
@@ -143,7 +143,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.location.watermark,
-          `${this.id}${configFiletype.extension.video}`,
+          `${this.id}${configApp.extension.video}`,
         ].join('/');
       },
     },

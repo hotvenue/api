@@ -3,10 +3,10 @@
 const config = require('config');
 const multer = require('multer');
 
-const configData = config.get('folder');
-const configFiletype = config.get('filetype');
+const configFolder = config.get('folder');
+const configApp = config.get('app');
 
-const upload = multer({ dest: configData.upload });
+const upload = multer({ dest: configFolder.upload });
 
 module.exports = {
   create: {
@@ -27,7 +27,7 @@ module.exports = {
           }
 
           if (imageWatermarkFile.mimetype !==
-            `image/${configFiletype.extension.watermark.replace('.', '')}`) {
+            `image/${configApp.extension.watermark.replace('.', '')}`) {
             return context.error(409, 'the watermark you are trying to upload isn\'t valid');
           }
 

@@ -6,9 +6,13 @@ const fs = require('fs');
 const os = require('os');
 const aws = require('aws-sdk');
 const path = require('path');
+const config = require('config');
 const childProcess = require('child_process');
 
 const tmpDir = process.env.TEMP || os.tmpdir();
+
+const configApp = config.get('app');
+const configAws = config.get('aws');
 
 const ffprobe = process.env.NODE_ENV === 'test' ?
   'C:\\Program Files\\ffmpeg\\bin\\ffprobe.exe' : 'ffprobe';
@@ -186,7 +190,7 @@ function doThumbnail(video, thumbnail) {
 function validateVideoDuration(metadata) {
   const duration = parseFloat(metadata.format.duration);
 
-  if (duration > 10) {
+  if (duration > configApp.video.maxLength) {
     throw new Error('Video too long');
   }
 
@@ -212,9 +216,9 @@ exports.handler = (event, context, done) => {
 
   const ext = path.extname(source.Key);
 
-  const ext2beVideo = '.mp4';
-  const extWatermark = '.png';
-  const ext2beImage = '.jpg';
+  const ext2beVideo = configApp.extension.video;
+  const extWatermark = configApp.extension.watermark;
+  const ext2beImage = configApp.extension.preview;
 
   const tmpOriginal = path.join(tmpDir, `original${ext}`);
   const tmpWatermark = path.join(tmpDir, `watermark${extWatermark}`);
@@ -229,20 +233,23 @@ exports.handler = (event, context, done) => {
     .then(() => doFfprobe(tmpOriginal))
     .then((metadata) => validateVideoDuration(metadata))
     .then(() => { console.log('File has a valid duration!'); })
-    .then(() => upload(tmpOriginal, `app/video/original/${getVideoId(source)}${ext2beVideo}`))
+    .then(() => upload(tmpOriginal,
+      `${configAws.s3.folder.video.original}/${getVideoId(source)}${ext2beVideo}`))
     .then(() => { console.log('Original video uploaded!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
-      Key: `app/location/watermark/${getLocationId(source)}${extWatermark}`,
+      Key: `${configAws.s3.folder.location.watermark}/${getLocationId(source)}${extWatermark}`,
     }, tmpWatermark))
     .then(() => { console.log('Watermark downloaded!'); })
     .then(() => doFfmpegA(tmpOriginal, tmpWatermark, tmpVideo))
     .then(() => { console.log('Video "A" created!'); })
     .then(() => doThumbnail(tmpVideo, tmpThumbnail))
     .then(() => { console.log('Thumbnail created!'); })
-    .then(() => upload(tmpVideo, `app/video/edited-A/${getVideoId(source)}${ext2beVideo}`))
+    .then(() => upload(tmpVideo,
+      `${configAws.s3.folder.video.editedA}/${getVideoId(source)}${ext2beVideo}`))
     .then(() => { console.log('Video uploaded!'); })
-    .then(() => upload(tmpThumbnail, `app/video/preview/${getVideoId(source)}${ext2beImage}`))
+    .then(() => upload(tmpThumbnail,
+      `${configAws.s3.folder.video.preview}/${getVideoId(source)}${ext2beImage}`))
     .then(() => { console.log('Thumbnail uploaded!'); })
     .then(() => deleteFile(source))
     .then(() => { console.log('Original video deleted!'); })
