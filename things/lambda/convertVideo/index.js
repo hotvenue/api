@@ -214,13 +214,16 @@ function resizeImage(source, destination, [sizeWidth, sizeHeight]) {
     .then((metadata) => {
       const ratio = metadata.width / metadata.height;
 
+      let resize;
+
       if (ratio > sizeRatio) {
-        return image.resize(sizeWidth);
+        resize = image.resize(sizeWidth);
+      } else {
+        resize = image.resize(null, sizeHeight);
       }
 
-      return image.resize(null, sizeHeight);
-    })
-    .toFile(destination);
+      return resize.toFile(destination);
+    });
 }
 
 function validateVideoDuration(metadata) {
