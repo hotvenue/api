@@ -133,26 +133,50 @@ function doFfmpegA(original, watermark, video) {
   return Promise.resolve()
     .then(() => new Promise((resolve, reject) => {
       childProcess
-        .execFile(ffmpeg, [], options)
-        .on('message', (msg) => { console.log(msg); })
-        .on('error', reject)
-        .on('close', resolve);
+        .execFile(ffmpeg, [], options, (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+
+            return;
+          }
+
+          console.log(stdout);
+          console.log(stderr);
+
+          resolve();
+        });
     }))
     .then(() => { console.log('First step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
-        .execFile(ffmpeg, args1, options)
-        .on('message', (msg) => { console.log(msg); })
-        .on('error', reject)
-        .on('close', resolve);
+        .execFile(ffmpeg, args1, options, (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+
+            return;
+          }
+
+          console.log(stdout);
+          console.log(stderr);
+
+          resolve();
+        });
     }))
     .then(() => { console.log('Second step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
-        .execFile(ffmpeg, args2, options)
-        .on('message', (msg) => { console.log(msg); })
-        .on('error', reject)
-        .on('close', resolve);
+        .execFile(ffmpeg, args2, options, (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+
+            return;
+          }
+
+          console.log(stdout);
+          console.log(stderr);
+
+          resolve();
+        });
     }));
 }
 
