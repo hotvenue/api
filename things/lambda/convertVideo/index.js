@@ -333,7 +333,7 @@ function handlerFrame(event, context, done) {
 }
 
 function handlerWatermark(event, context, done) {
-  return handlerImage('location', event, context, done);
+  return handlerImage('watermark', event, context, done);
 }
 
 exports.handler = (event, context, done) => {
