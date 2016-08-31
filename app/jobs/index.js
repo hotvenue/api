@@ -15,19 +15,16 @@ options.kue.redis = _.assign(optionsRedis, options.kue.redis);
 const queue = kue.createQueue(options.kue);
 queue.watchStuckJobs();
 
-queue.createMyJob = function createMyJob(name, params, complete) {
+queue.createMyJob = function createMyJob(name, params) {
   // eslint-disable-next-line no-param-reassign
-  complete = typeof params === 'function' ? params : complete || (() => {});
-  // eslint-disable-next-line no-param-reassign
-  params = typeof params === 'function' ? {} : params || {};
+  params = params || {};
 
   const job = queue.create(name, params);
 
   job
     .removeOnComplete(true)
-    .on('complete', (result) => {
+    .on('complete', () => {
       log.jobs.debug(`Job ${name} completed`);
-      complete(result);
     })
     .on('failed attempt', (errorMessage) => {
       log.jobs.debug(`Job ${name} failed`);
