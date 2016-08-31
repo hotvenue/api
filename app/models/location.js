@@ -37,7 +37,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
           what: 'location frame image',
           oldPath: file.path,
           newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
-          newPathCloud: this.urlFrameRelative,
+          newPathCloud: `${configS3.folder.location.tmpFrame}/${this.id}${this.extension}`,
         });
       },
     },
@@ -61,7 +61,8 @@ module.exports = function createLocation(sequelize, DataTypes) {
           oldPath: file.path,
           newPathLocal: path.join(file.destination,
             `${this.getDataValue('id')}${configApp.extension.watermark}`),
-          newPathCloud: this.urlWatermarkRelative,
+          newPathCloud:
+            `${configS3.folder.location.tmpWatermark}/${this.id}${configApp.extension.watermark}`,
         });
       },
     },
