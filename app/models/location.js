@@ -31,7 +31,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
        */
       set(file) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
-        this.setDataValue('extension', ext);
+        this.extension = ext;
 
         utils.uploadFile({
           what: 'location frame image',
@@ -69,6 +69,9 @@ module.exports = function createLocation(sequelize, DataTypes) {
     extension: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(extension) {
+        this.setDataValue('extension', extension.toLowerCase());
+      },
     },
 
     name: {
@@ -108,7 +111,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.location.frame,
-          this.getDataValue('id') + this.getDataValue('extension'),
+          this.id + this.extension,
         ].join('/');
       },
     },
@@ -129,7 +132,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.location.watermark,
-          `${this.getDataValue('id')}${configFiletype.extension.video}`,
+          `${this.id}${configFiletype.extension.video}`,
         ].join('/');
       },
     },

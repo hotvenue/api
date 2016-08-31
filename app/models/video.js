@@ -32,10 +32,9 @@ module.exports = function createVideo(sequelize, DataTypes) {
        */
       set(file) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
-        this.setDataValue('extension',
-          process.env.NODE_ENV === 'test' ? ext : configFiletype.extension.video);
+        this.extension = process.env.NODE_ENV === 'test' ? ext : configFiletype.extension.video;
 
-        const prefixFile = `${configS3.folder.video.tmp}/${this.getDataValue('id')}`;
+        const prefixFile = `${configS3.folder.video.tmp}/${this.id}`;
 
         Promise.resolve()
           .then(() => this.getDevice())
@@ -43,7 +42,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
           .then((location) => utils.uploadFile({
             what: 'video',
             oldPath: file.path,
-            newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
+            newPathLocal: path.join(file.destination, this.id + ext),
             newPathCloud: `${prefixFile}_${location.id}${ext}`,
           }))
           .catch((err) => {
@@ -57,6 +56,9 @@ module.exports = function createVideo(sequelize, DataTypes) {
     extension: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(extension) {
+        this.setDataValue('extension', extension.toLowerCase());
+      },
     },
 
     sent: {
@@ -85,7 +87,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.video.original,
-          this.getDataValue('id') + this.getDataValue('extension'),
+          this.id + this.extension,
         ].join('/');
       },
     },
@@ -97,7 +99,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
           configS3.link,
           configS3.bucket,
           configS3.folder.video.editedA,
-          this.getDataValue('id') + this.getDataValue('extension'),
+          this.id + this.extension,
         ].join('/');
       },
     },
@@ -118,7 +120,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.video.preview,
-          `${this.getDataValue('id')}${configFiletype.extension.preview}`,
+          `${this.id}${configFiletype.extension.preview}`,
         ].join('/');
       },
     },
@@ -127,19 +129,6 @@ module.exports = function createVideo(sequelize, DataTypes) {
       associate: (models) => {
         video.belongsTo(models.user);
         video.belongsTo(models.device);
-      },
-    },
-
-    instanceMethods: {
-      getLocation() {
-        if (!this.deviceId) {
-          return false;
-        }
-
-        return sequelize.models.device.findById(this.deviceId, {
-          include: [{ model: sequelize.models.location }],
-        })
-          .then((device) => device.location);
       },
     },
   });

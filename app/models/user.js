@@ -15,6 +15,9 @@ module.exports = function createUser(sequelize, DataTypes) {
       validate: {
         isEmail: true,
       },
+      set(email) {
+        this.setDataValue('email', email.toLowerCase());
+      },
     },
   }, {
     classMethods: {
