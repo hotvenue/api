@@ -5,7 +5,7 @@
       "image": "390360040979.dkr.ecr.eu-west-1.amazonaws.com/hotvenue-server:v_%BUILD_NUMBER%",
       "name": "hotvenue",
       "cpu": 256,
-      "memory": 256,
+      "memory": 450,
       "essential": true,
       "portMappings": [
         {
