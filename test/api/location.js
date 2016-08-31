@@ -17,6 +17,8 @@ describe('Location', () => {
 
   it('POST /location should add a location', (done) => {
     const locationName = 'location 1';
+    const hashtag = '#location';
+    const email = 'location@location.com';
     const geoLatitude = 45.4500796;
     const geoLongitude = 9.1707642;
 
@@ -25,6 +27,8 @@ describe('Location', () => {
       .attach('frame', 'test/assets/sample-image.jpg')
       .attach('watermark', 'test/assets/watermark.png')
       .field('name', locationName)
+      .field('hashtag', hashtag)
+      .field('email', email)
       .field('geoLatitude', geoLatitude)
       .field('geoLongitude', geoLongitude)
       .expect(201)
@@ -37,6 +41,8 @@ describe('Location', () => {
 
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('name').and.equal(locationName);
+        common.expect(res.body).to.have.property('hashtag').and.equal(hashtag);
+        common.expect(res.body).to.have.property('email').and.equal(email);
         common.expect(res.body).to.have.property('geoLatitude').and.equal(geoLatitude);
         common.expect(res.body).to.have.property('geoLongitude').and.equal(geoLongitude);
         common.expect(res.body).to.have.property('createdAt')

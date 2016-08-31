@@ -83,6 +83,17 @@ module.exports = function createLocation(sequelize, DataTypes) {
       type: DataTypes.STRING,
     },
 
+    email: {
+      type: DataTypes.STRING,
+      validate: {
+        isEmail: true,
+      },
+      set(email) {
+        this.setDataValue('email', email.toLowerCase());
+      },
+    },
+
+
     geoLatitude: {
       type: DataTypes.DOUBLE,
       allowNull: false,
