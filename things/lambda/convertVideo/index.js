@@ -273,7 +273,7 @@ function handlerVideo(event, context, done) {
     .then(() => { console.log('Original video uploaded!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
-      Key: `${configAws.s3.folder.location.watermark}/${locationId}${extWatermark}`,
+      Key: `${configAws.s3.folder.location.watermark}/${locationId}@video1${extWatermark}`,
     }, tmpWatermark))
     .then(() => { console.log('Watermark downloaded!'); })
     .then(() => doFfmpegA(tmpOriginal, tmpWatermark, tmpVideo))
