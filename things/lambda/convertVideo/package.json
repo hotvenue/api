@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "prebuild": "rm -rf node_modules && nvm use 4.3",
     "build": "npm run pretest",
     "postbuild": "chmod +x ./ffprobe && chmod +x ./ffmpeg && zip -r convertVideo.zip .",
     "pretest": "npm run pretest:cp && npm run pretest:install",
