@@ -22,6 +22,10 @@ module.exports = {
           name: 'watermark',
           maxCount: 1,
         }])(req, res, () => {
+          if (!req.files.frame || !req.files.frameThanks || !req.files.watermark) {
+            return context.error(409, 'you must upload also the images');
+          }
+
           const imageFrameFile = req.files.frame[0];
           const imageFrameThanksFile = req.files.frameThanks[0];
           const imageWatermarkFile = req.files.watermark[0];
