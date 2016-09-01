@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const path = require('path');
 const config = require('config');
 
@@ -99,63 +100,93 @@ module.exports = function createLocation(sequelize, DataTypes) {
     urlFrame: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.link,
-          configS3.bucket,
-          this.urlFrameRelative,
-        ].join('/');
+        const urls = {};
+
+        _.forIn(this.urlFrameRelative, (value, key) => {
+          urls[key] = [
+            configS3.link,
+            configS3.bucket,
+            value,
+          ].join('/');
+        });
+
+        return urls;
       },
     },
 
     urlFrameRelative: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.folder.location.frame,
-          this.id + this.extension,
-        ].join('/');
+        const file = `${configS3.folder.location.frame}/${this.id}`;
+        const files = {};
+
+        Object.keys(configApp.location.frame.sizes).forEach((key) => {
+          files[key] = `${file}@${key}${configApp.extension.frame}`;
+        });
+
+        return files;
       },
     },
 
     urlFrameThanks: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.link,
-          configS3.bucket,
-          this.urlFrameThanksRelative,
-        ].join('/');
+        const urls = {};
+
+        _.forIn(this.urlFrameThanksRelative, (value, key) => {
+          urls[key] = [
+            configS3.link,
+            configS3.bucket,
+            value,
+          ].join('/');
+        });
+
+        return urls;
       },
     },
 
     urlFrameThanksRelative: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.folder.location.frame,
-          `${this.id}-thanks${configApp.extension.frame}`,
-        ].join('/');
+        const file = `${configS3.folder.location.frame}/${this.id}`;
+        const files = {};
+
+        Object.keys(configApp.location.frame.sizes).forEach((key) => {
+          files[key] = `${file}-thanks@${key}${configApp.extension.frame}`;
+        });
+
+        return files;
       },
     },
 
     urlWatermark: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.link,
-          configS3.bucket,
-          this.urlWatermarkRelative,
-        ].join('/');
+        const urls = {};
+
+        _.forIn(this.urlWatermarkRelative, (value, key) => {
+          urls[key] = [
+            configS3.link,
+            configS3.bucket,
+            value,
+          ].join('/');
+        });
+
+        return urls;
       },
     },
 
     urlWatermarkRelative: {
       type: DataTypes.VIRTUAL,
       get() {
-        return [
-          configS3.folder.location.watermark,
-          this.id + configApp.extension.watermark,
-        ].join('/');
+        const file = `${configS3.folder.location.watermark}/${this.id}`;
+        const files = {};
+
+        Object.keys(configApp.location.watermark.sizes).forEach((key) => {
+          files[key] = `${file}@${key}${configApp.extension.watermark}`;
+        });
+
+        return files;
       },
     },
   }, {
