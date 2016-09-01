@@ -345,11 +345,11 @@ exports.handler = (event, context, done) => {
   const key = s3Event.object.key;
 
   const folder = path.dirname(key);
-  const handlerSwitch = {
-    [configAws.s3.folder.video.tmp]: handlerVideo,
-    [configAws.s3.folder.location.tmpFrame]: handlerFrame,
-    [configAws.s3.folder.location.tmpWatermark]: handlerWatermark,
-  };
+  const handlerSwitch = {};
+
+  handlerSwitch[configAws.s3.folder.video.tmp] = handlerVideo;
+  handlerSwitch[configAws.s3.folder.location.tmpFrame] = handlerFrame;
+  handlerSwitch[configAws.s3.folder.location.tmpWatermark] = handlerWatermark;
 
   s3 = new aws.S3({
     params: {
