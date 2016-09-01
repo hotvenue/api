@@ -7,6 +7,7 @@ const os = require('os');
 const aws = require('aws-sdk');
 const path = require('path');
 const sharp = require('sharp'); // eslint-disable-line import/no-unresolved
+const crypto = require('crypto');
 const config = require('config');
 const childProcess = require('child_process');
 
@@ -23,6 +24,10 @@ const ffmpeg = process.env.NODE_ENV === 'test' ?
 let s3;
 
 const uuidRegex = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+
+function getRandomString() {
+  return crypto.randomBytes(32).toString('hex');
+}
 
 function validateVideoFile(source) {
   const filenameRegex = new RegExp(`${uuidRegex}_${uuidRegex}\.[a-z]+`);
@@ -255,10 +260,10 @@ function handlerVideo(event, context, done) {
   const extWatermark = configApp.extension.watermark;
   const ext2beImage = configApp.extension.preview;
 
-  const tmpOriginal = path.join(tmpDir, `original${ext}`);
-  const tmpWatermark = path.join(tmpDir, `watermark${extWatermark}`);
-  const tmpVideo = path.join(tmpDir, `video${ext2beVideo}`);
-  const tmpThumbnail = path.join(tmpDir, `thumbnail${ext2beImage}`);
+  const tmpOriginal = path.join(tmpDir, `original-${getRandomString()}${ext}`);
+  const tmpWatermark = path.join(tmpDir, `watermark-${getRandomString()}${extWatermark}`);
+  const tmpVideo = path.join(tmpDir, `video-${getRandomString()}${ext2beVideo}`);
+  const tmpThumbnail = path.join(tmpDir, `thumbnail-${getRandomString()}${ext2beImage}`);
 
   return Promise.resolve()
     .then(() => validateVideoFile(source))
@@ -307,10 +312,10 @@ function handlerImage(what, event, context, done) {
   const sizes = configApp.location[what].sizes;
   const sizeKeys = Object.keys(sizes);
 
-  const tmpOriginal = path.join(tmpDir, `original${ext}`);
+  const tmpOriginal = path.join(tmpDir, `original-${getRandomString()}${ext}`);
   const tmpImage = {};
   sizeKeys.forEach((sizeKey) => {
-    tmpImage[sizeKey] = path.join(tmpDir, `image${sizeKey}${ext2be}`);
+    tmpImage[sizeKey] = path.join(tmpDir, `image-${getRandomString()}-${sizeKey}${ext2be}`);
   });
 
   return Promise.resolve()
