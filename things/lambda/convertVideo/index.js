@@ -36,7 +36,7 @@ function validateVideoFile(source) {
 }
 
 function validateImageFile(source, ext) {
-  const filenameRegex = new RegExp(`${uuidRegex}\\${ext}`);
+  const filenameRegex = new RegExp(`${uuidRegex}(-thanks)?\\${ext}`);
   const filename = path.basename(source.Key);
 
   if (!filename.match(filenameRegex)) {
