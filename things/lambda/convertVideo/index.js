@@ -204,7 +204,9 @@ function doThumbnail(video, thumbnail) {
   });
 }
 
-function resizeImage(source, destination, [sizeWidth, sizeHeight]) {
+function resizeImage(source, destination, size) {
+  const sizeWidth = size[0];
+  const sizeHeight = size[1];
   const sizeRatio = sizeWidth / sizeHeight;
 
   const image = sharp(source);
