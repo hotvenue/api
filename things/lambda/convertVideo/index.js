@@ -6,7 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const aws = require('aws-sdk');
 const path = require('path');
-const sharp = require('sharp');
+const sharp = require('sharp'); // eslint-disable-line import/no-unresolved
 const config = require('config');
 const childProcess = require('child_process');
 
