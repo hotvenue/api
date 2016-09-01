@@ -16,14 +16,22 @@ module.exports = {
           name: 'frame',
           maxCount: 1,
         }, {
+          name: 'frameThanks',
+          maxCount: 1,
+        }, {
           name: 'watermark',
           maxCount: 1,
         }])(req, res, () => {
           const imageFrameFile = req.files.frame[0];
+          const imageFrameThanksFile = req.files.frameThanks[0];
           const imageWatermarkFile = req.files.watermark[0];
 
           if (!imageFrameFile.mimetype.match(configApp.location.frame.isValid)) {
             return context.error(409, 'the frame you are trying to upload isn\'t valid');
+          }
+
+          if (!imageFrameThanksFile.mimetype.match(configApp.location.frame.isValid)) {
+            return context.error(409, 'the frameThanks you are trying to upload isn\'t valid');
           }
 
           if (!imageWatermarkFile.mimetype.match(configApp.location.watermark.isValid)) {
@@ -32,6 +40,7 @@ module.exports = {
 
           context.attributes = { // eslint-disable-line no-param-reassign
             frame: imageFrameFile,
+            frameThanks: imageFrameThanksFile,
             watermark: imageWatermarkFile,
           };
 

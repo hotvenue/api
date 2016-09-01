@@ -18,60 +18,49 @@ module.exports = function createLocation(sequelize, DataTypes) {
 
     frame: {
       type: DataTypes.VIRTUAL,
-      /**
-       * @param {Object} file
-       * @param {string} file.fieldname - The name of the param passed in the POST
-       * @param {string} file.originalname
-       * @param {string} file.encoding
-       * @param {string} file.mimetype
-       * @param {string} file.destination - The destination directory path
-       * @param {string} file.filename
-       * @param {string} file.path - The destination file path
-       * @param {string} file.size - Filesize in bytes
-       */
       set(file) {
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
-        this.extension = ext;
+        const filename = this.id + ext;
+
+        this.setDataValue('frame', filename);
 
         utils.uploadFile({
           what: 'location frame image',
           oldPath: file.path,
-          newPathLocal: path.join(file.destination, this.getDataValue('id') + ext),
-          newPathCloud: `${configS3.folder.location.tmpFrame}/${this.id}${this.extension}`,
+          newPathLocal: path.join(file.destination, filename),
+          newPathCloud: `${configS3.folder.location.tmpFrame}/${filename}`,
+        });
+      },
+    },
+
+    frameThanks: {
+      type: DataTypes.VIRTUAL,
+      set(file) {
+        const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
+        const filename = `${this.id}-thanks${ext}`;
+
+        this.setDataValue('frameThanks', filename);
+
+        utils.uploadFile({
+          what: 'location frameThanks image',
+          oldPath: file.path,
+          newPathLocal: path.join(file.destination, filename),
+          newPathCloud: `${configS3.folder.location.tmpFrame}/${filename}`,
         });
       },
     },
 
     watermark: {
       type: DataTypes.VIRTUAL,
-      /**
-       * @param {Object} file
-       * @param {string} file.fieldname - The name of the param passed in the POST
-       * @param {string} file.originalname
-       * @param {string} file.encoding
-       * @param {string} file.mimetype
-       * @param {string} file.destination - The destination directory path
-       * @param {string} file.filename
-       * @param {string} file.path - The destination file path
-       * @param {string} file.size - Filesize in bytes
-       */
       set(file) {
         utils.uploadFile({
           what: 'location watermark image',
           oldPath: file.path,
           newPathLocal: path.join(file.destination,
-            `${this.getDataValue('id')}${configApp.extension.watermark}`),
+            `${this.id}${configApp.extension.watermark}`),
           newPathCloud:
             `${configS3.folder.location.tmpWatermark}/${this.id}${configApp.extension.watermark}`,
         });
-      },
-    },
-
-    extension: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      set(extension) {
-        this.setDataValue('extension', extension.toLowerCase());
       },
     },
 
@@ -128,6 +117,27 @@ module.exports = function createLocation(sequelize, DataTypes) {
       },
     },
 
+    urlFrameThanks: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
+          configS3.link,
+          configS3.bucket,
+          this.urlFrameThanksRelative,
+        ].join('/');
+      },
+    },
+
+    urlFrameThanksRelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
+          configS3.folder.location.frame,
+          `${this.id}-thanks${configApp.extension.frame}`,
+        ].join('/');
+      },
+    },
+
     urlWatermark: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -144,7 +154,7 @@ module.exports = function createLocation(sequelize, DataTypes) {
       get() {
         return [
           configS3.folder.location.watermark,
-          `${this.id}${configApp.extension.video}`,
+          this.id + configApp.extension.watermark,
         ].join('/');
       },
     },
