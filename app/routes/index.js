@@ -60,7 +60,7 @@ module.exports = (app) => {
   addOtherRoutes(app);
   addRestRoutes(app);
 
-  addTelegramRoutes();
+  // addTelegramRoutes();
 
   return app;
 };
