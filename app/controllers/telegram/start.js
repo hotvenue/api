@@ -49,11 +49,7 @@ Created: ${moment(user.createdAt).format('YYYY-MM-DD')}
 Telegram ID: ${user.telegramId}`);
 
         $.api.sendMessage(configTelegram.adminId, 'Do you want to enable it?', {
-          // reply_to_message_id: $._message._messageId,
           reply_markup: JSON.stringify({
-            // resize_keyboard: true,
-            // one_time_keyboard: true,
-            // keyboard: [['YES', 'NO']],
             inline_keyboard: [[{
               text: 'YES',
               callback_data: `enable ${$.message.from.id}`,

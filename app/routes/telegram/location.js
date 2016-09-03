@@ -1,8 +1,12 @@
 'use strict';
 
-const locationController = require('../../controllers/telegram/location');
+const LocationController = require('../../controllers/telegram/location');
 
 module.exports = function addStartTelegramRoutes(bot) {
-  // bot.onText(/\/location/, locationController.locationsHandler(bot));
+  const location = new LocationController();
+
+  bot.router
+    .when(/^\/location$/, location)
+    .when(/^\/locations$/, location);
 };
 
