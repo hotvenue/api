@@ -19,6 +19,10 @@ module.exports = function createUser(sequelize, DataTypes) {
         this.setDataValue('email', email.toLowerCase());
       },
     },
+
+    telegramId: {
+      type: DataTypes.STRING,
+    },
   }, {
     classMethods: {
       associate: (models) => {
