@@ -1,44 +1,50 @@
 'use strict';
 
+const moment = require('moment');
+const Telegram = require('telegram-node-bot');
 const pluralize = require('pluralize');
 
-const cloud = require('../../libraries/cloud');
+const InputFile = Telegram.InputFile;
+
+const HotVenueTelegramBaseController = require('./_base');
+
 const models = require('../../models');
 
-module.exports = {
-  statsHandler(bot) {
-    return (msg) => {
-      const chatId = msg.chat.id;
+class VideoController extends HotVenueTelegramBaseController {
+  get routes() {
+    return {
+      '/video': 'videoHandler',
+    };
+  }
 
-      Promise
-        .all([
-          models.video
-            .count({
-              where: {
-                ready: true,
-                createdAt: {
-                  $gt: new Date(new Date() - 60 * 60 * 1000),
-                },
+  videoHandler($) {
+    Promise
+      .all([
+        models.video
+          .count({
+            where: {
+              ready: true,
+              createdAt: {
+                $gt: new Date(new Date() - 60 * 60 * 1000),
               },
-            }),
-
-          models.video.findOne({
-            order: [
-              ['createdAt', 'DESC'],
-            ],
+            },
           }),
-        ])
-        .then(([videoCount, lastVideo]) => Promise.all([
-          videoCount,
-          lastVideo,
-          cloud.download(lastVideo.urlPreviewRelative),
-        ]))
-        .then(([videoCount, lastVideo, image]) => {
-          bot.sendMessage(chatId, `
+
+        models.video.findOne({
+          order: [
+            ['createdAt', 'DESC'],
+          ],
+        }),
+      ])
+      .then(([videoCount, lastVideo]) => {
+        $.sendMessage(`
 In the last hour we recorded ${videoCount} ${pluralize('video', videoCount)}
 The last one was this: ${lastVideo.urlEditedA}`);
-          bot.sendPhoto(chatId, image);
-        });
-    };
-  },
-};
+
+        const date = moment(lastVideo.createdAt).format('YYYY-MM-DD_HH-mm-ss');
+        $.sendPhoto(InputFile.byUrl(lastVideo.urlPreview, `video-${date}.jpg`));
+      });
+  }
+}
+
+module.exports = VideoController;

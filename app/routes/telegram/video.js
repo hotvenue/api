@@ -1,8 +1,11 @@
 'use strict';
 
-const videoController = require('../../controllers/telegram/video');
+const VideoController = require('../../controllers/telegram/video');
 
 module.exports = function addStartTelegramRoutes(bot) {
-  // bot.onText(/\/video/, videoController.statsHandler(bot));
+  const video = new VideoController();
+
+  bot.router
+    .when('/video', video);
 };
 
