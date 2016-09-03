@@ -3,7 +3,10 @@
 const HelpController = require('../../controllers/telegram/help');
 
 module.exports = function addStartTelegramRoutes(bot) {
+  const help = new HelpController();
+
   bot.router
-    .when('/help', new HelpController());
+    .when('/help', help)
+    .otherwise(help);
 };
 

@@ -1,9 +1,8 @@
 'use strict';
 
-const Telegram = require('telegram-node-bot');
-const TelegramBaseController = Telegram.TelegramBaseController;
+const HotVenueTelegramBaseController = require('./_base');
 
-class HelpController extends TelegramBaseController {
+class HelpController extends HotVenueTelegramBaseController {
   get routes() {
     return {
       '/help': 'helpHandler',
