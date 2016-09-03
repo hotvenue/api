@@ -1,24 +1,23 @@
 'use strict';
 
-module.exports = {
-  startHandler(bot) {
-    return (msg, match) => {
-      const chatId = msg.chat.id;
-      const password = match[1];
+const Telegram = require('telegram-node-bot');
+const TelegramBaseController = Telegram.TelegramBaseController;
 
-      if (typeof password === 'undefined') {
-        bot.sendMessage(chatId, 'You need to specity a password!');
-
-        return;
-      }
-
-      if (password !== 'HotVenue#2016') {
-        bot.sendMessage(chatId, 'Ops, wrong password');
-
-        return;
-      }
-
-      bot.sendMessage(chatId, 'Yeee, right password!!');
+class StartController extends TelegramBaseController {
+  get routes() {
+    return {
+      '/start': 'startHandler',
     };
-  },
-};
+  }
+
+  startHandler($) {
+    $.sendMessage(`
+Welcome to the HotVenue Bot!
+You'll be enabled in few minutes...`);
+
+    console.log($);
+    console.log(this);
+  }
+}
+
+module.exports = StartController;

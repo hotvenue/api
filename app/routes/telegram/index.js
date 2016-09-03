@@ -2,10 +2,12 @@
 
 const fs = require('fs');
 const config = require('config');
-const TelegramBot = require('node-telegram-bot-api');
+const Telegram = require('telegram-node-bot');
+
+const log = require('../../libraries/log');
 
 const tgConfig = config.get('telegram');
-const bot = new TelegramBot(tgConfig.id, tgConfig.options);
+const bot = new Telegram.Telegram(tgConfig.id, log.telegram);
 
 module.exports = function addTelegramRoutes() {
   fs

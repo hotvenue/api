@@ -13,6 +13,7 @@ const loggerNames = [
   'db',
   'aws',
   'jobs',
+  'telegram',
   'analyticsFrame',
 ];
 
