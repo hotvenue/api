@@ -46,6 +46,10 @@ const server = module.exports = http.createServer(app);
 const flushDb = process.env.FLUSH_DB === 'yes';
 
 function beforeDbSync() {
+  if (process.env.NODE_ENV === 'test') {
+    return true;
+  }
+
   const umzug = new Umzug({
     logging: log.debug,
 
@@ -76,7 +80,8 @@ function afterDbSync() {
   server.listen(port);
 }
 
-beforeDbSync()
+Promise.resolve()
+  .then(beforeDbSync)
   .then(syncDb)
   .then(afterDbSync)
   .catch((err) => {

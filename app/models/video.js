@@ -37,13 +37,11 @@ module.exports = function createVideo(sequelize, DataTypes) {
         const prefixFile = `${configS3.folder.video.tmp}/${this.id}`;
 
         Promise.resolve()
-          .then(() => this.getDevice())
-          .then((device) => device.getLocation())
-          .then((location) => utils.uploadFile({
+          .then(() => utils.uploadFile({
             what: 'video',
             oldPath: file.path,
             newPathLocal: path.join(file.destination, this.id + ext),
-            newPathCloud: `${prefixFile}_${location.id}${ext}`,
+            newPathCloud: `${prefixFile}_${this.locationId}${ext}`,
           }))
           .catch((err) => {
             log.error('Error while uploading the video file');
@@ -129,6 +127,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
       associate: (models) => {
         video.belongsTo(models.user);
         video.belongsTo(models.device);
+        video.belongsTo(models.location);
       },
     },
   });

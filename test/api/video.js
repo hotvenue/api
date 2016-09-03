@@ -39,6 +39,11 @@ describe('Video', () => {
         common.expect(res.body.device).to.have.property('identifierForVendor')
           .and.equal(common.deviceId);
 
+        common.expect(res.body).to.have.property('location');
+        common.expect(res.body.location).to.be.a('object');
+        common.expect(res.body.location).to.have.property('id')
+          .and.equal(common.location.id);
+
         common.video = res.body;
 
         const videoPath = path.join(config.get('folder').upload,
