@@ -19,24 +19,37 @@ module.exports = function createVideo(sequelize, DataTypes) {
 
     file: {
       type: DataTypes.VIRTUAL,
-      /**
-       * @param {Object} file
-       * @param {string} file.fieldname - The name of the param passed in the POST
-       * @param {string} file.originalname
-       * @param {string} file.encoding
-       * @param {string} file.mimetype
-       * @param {string} file.destination - The destination directory path
-       * @param {string} file.filename
-       * @param {string} file.path - The destination file path
-       * @param {string} file.size - Filesize in bytes
-       */
       set(file) {
+        const models = require('../models'); // eslint-disable-line global-require
+
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
         this.extension = process.env.NODE_ENV === 'test' ? ext : configApp.extension.video;
 
         const prefixFile = `${configS3.folder.video.tmp}/${this.id}`;
 
         Promise.resolve()
+          .then(() => utils.hashFile(file.path))
+          .then((hash) => {
+            this.hash = hash;
+
+            return models.video.update({ hash }, {
+              where: {
+                id: this.id,
+              },
+            });
+          })
+          .then(() => models.video.findAll({
+            where: {
+              hash: this.hash,
+            },
+          }))
+          .then((videos) => {
+            if (videos.length > 0) {
+              throw new Error('Video already uploaded!');
+            }
+
+            return true;
+          })
           .then(() => utils.uploadFile({
             what: 'video',
             oldPath: file.path,
@@ -45,10 +58,15 @@ module.exports = function createVideo(sequelize, DataTypes) {
           }))
           .catch((err) => {
             log.error('Error while uploading the video file');
+            log.debug(err);
 
             throw err;
           });
       },
+    },
+
+    hash: {
+      type: DataTypes.STRING,
     },
 
     extension: {

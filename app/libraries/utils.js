@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const crypto = require('crypto');
 const EpilogueError = require('epilogue').Errors.EpilogueError;
 
 const log = require('./log');
@@ -41,5 +42,25 @@ module.exports = {
 
         throw new EpilogueError(500);
       });
+  },
+
+  hashFile(path, algorithm = 'sha512') {
+    const shasum = crypto.createHash(algorithm);
+
+    return new Promise((resolve, reject) => {
+      const stream = fs.createReadStream(path);
+
+      stream.on('data', (data) => {
+        shasum.update(data);
+      });
+
+      stream.on('end', () => {
+        resolve(shasum.digest('hex'));
+      });
+
+      stream.on('error', (err) => {
+        reject(err);
+      });
+    });
   },
 };
