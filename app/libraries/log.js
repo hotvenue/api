@@ -7,6 +7,8 @@ require('winston-elasticsearch');
 
 const cloud = require('./cloud');
 
+const minLevel = process.env.NODE_ENV === 'production' ? 'info' : 'silly';
+
 const loggerNames = [
   'default',
   'server',
@@ -29,7 +31,7 @@ function loggerFactory(label) {
       new winston.transports.Console({
         colorize: true,
         label: label === 'default' ? null : label,
-        level: label === 'server' ? 'warn' : 'info',
+        level: label === 'server' ? 'warn' : minLevel,
         silent: label === 'analyticsFrame',
         timestamp,
       }),

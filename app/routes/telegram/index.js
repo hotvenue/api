@@ -14,7 +14,11 @@ class HotVenueTelegramLogger {
   }
 
   doLog(severity, data) {
-    this.log[severity](JSON.stringify(data));
+    try {
+      this.log[severity](JSON.stringify(data));
+    } catch (e) {
+      console.log(data);
+    }
   }
 
   log(data) {

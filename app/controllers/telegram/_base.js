@@ -6,7 +6,7 @@ const TelegramBaseController = Telegram.TelegramBaseController;
 const models = require('../../models');
 
 class HotVenueTelegramBaseController extends TelegramBaseController {
-  methodForCommand(command) {
+  methodForCommand(command = '/help') {
     const method = super.methodForCommand(command);
 
     return function methodForCommand($) {
