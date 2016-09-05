@@ -2,9 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const config = require('config');
 const md = require('markdown-it')();
 
 const log = require('../libraries/log');
+const jobs = require('../jobs');
+
+const configJobs = config.get('jobs');
 
 module.exports = {
   params(req, res) {
@@ -57,6 +61,28 @@ ${privacyText}
     res.json({
       severity,
       log: req.body,
+    });
+  },
+
+  job(req, res) {
+    const job = req.params.job || 'maid';
+
+    if (req.query.secret === configJobs.secret) {
+      if (jobs.hasOwnProperty(job)) {
+        jobs[job](res.body);
+
+        return res.json({ result: true });
+      }
+
+      res.status(404);
+      return res.json({
+        error: 'Job not found',
+      });
+    }
+
+    res.status(403);
+    return res.json({
+      error: 'You are not allowed to access this page',
     });
   },
 };

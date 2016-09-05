@@ -9,4 +9,8 @@ module.exports = {
     dialect: 'sqlite',
     storage: path.join(config.folder.data, 'hotvenue.db'),
   },
+
+  jobs: {
+    autostart: true,
+  },
 };

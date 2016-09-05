@@ -2,10 +2,12 @@
 
 const express = require('express');
 
-const apiController = require('../controllers/v1');
+const v1Controller = require('../controllers/v1');
 
 const router = module.exports = express.Router(); // eslint-disable-line new-cap
 
-router.get('/params', apiController.params);
+router.get('/params', v1Controller.params);
 
-router.post('/log/:severity?', apiController.log);
+router.post('/log/:severity?', v1Controller.log);
+
+router.post('/job/:job?', v1Controller.job);

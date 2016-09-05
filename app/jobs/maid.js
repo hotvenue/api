@@ -175,12 +175,20 @@ module.exports = function maidJob() {
   }
 
   function maid() {
+    if (process.env.NODE_ENV === 'test') {
+      return Promise.resolve();
+    }
+
     return Promise.resolve()
       .then(() => maidCheckVideo())
       .then(() => maidSendVideo());
   }
 
-  setInterval(maid, configJobs.maid.delay);
+  if (configJobs.autostart) {
+    setInterval(maid, configJobs.maid.delay);
+  }
 
-  return {};
+  return {
+    maid,
+  };
 };
