@@ -2,7 +2,7 @@
 
 const express = require('express');
 
-const apiController = require('../../controllers/api/v1');
+const apiController = require('../controllers/v1');
 
 const router = module.exports = express.Router(); // eslint-disable-line new-cap
 

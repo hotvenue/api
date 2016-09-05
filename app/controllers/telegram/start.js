@@ -5,6 +5,7 @@ const moment = require('moment');
 const Telegram = require('telegram-node-bot');
 
 const models = require('../../models');
+const log = require('../../libraries/log');
 
 const configTelegram = config.get('telegram');
 
@@ -73,7 +74,8 @@ Telegram ID: ${user.telegramId}`);
         });
       })
       .catch((err) => {
-        console.log(err);
+        log.telegram.error('Error in the start controller');
+        log.telegram.debug(err);
       });
   }
 }

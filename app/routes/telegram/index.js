@@ -17,7 +17,7 @@ class HotVenueTelegramLogger {
     try {
       this.log[severity](JSON.stringify(data));
     } catch (e) {
-      console.log(data);
+      console.log(data); // eslint-disable-line no-console
     }
   }
 

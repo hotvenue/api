@@ -7,7 +7,7 @@ const log = { foo: 'bar' };
 describe('API v1', () => {
   it('GET /params should return the params', (done) => {
     common.request(common.server)
-      .get('/api/v1/params')
+      .get('/v1/params')
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -25,7 +25,7 @@ describe('API v1', () => {
 
   it('POST /log should return the body', (done) => {
     common.request(common.server)
-      .post('/api/v1/log')
+      .post('/v1/log')
       .send(log)
       .expect(200)
       .end((err, res) => {
@@ -47,7 +47,7 @@ describe('API v1', () => {
     const severity = 'warn';
 
     common.request(common.server)
-      .post(`/api/v1/log/${severity}`)
+      .post(`/v1/log/${severity}`)
       .send(log)
       .expect(200)
       .end((err, res) => {

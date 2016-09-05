@@ -76,7 +76,10 @@ function syncDb() {
  * Sync the database and then listen
  */
 function afterDbSync() {
-  log.db.debug('Finished build the db');
+  if (process.env.NODE_ENV !== 'test') {
+    log.db.debug('Finished build the db');
+  }
+
   server.listen(port);
 }
 

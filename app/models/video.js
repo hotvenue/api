@@ -27,10 +27,12 @@ module.exports = function createVideo(sequelize, DataTypes) {
 
         const prefixFile = `${configS3.folder.video.tmp}/${this.id}`;
 
+        let hash;
+
         Promise.resolve()
           .then(() => utils.hashFile(file.path))
-          .then((hash) => {
-            this.hash = hash;
+          .then((tmpHash) => {
+            hash = tmpHash;
 
             return models.video.update({ hash }, {
               where: {
@@ -40,7 +42,8 @@ module.exports = function createVideo(sequelize, DataTypes) {
           })
           .then(() => models.video.findAll({
             where: {
-              hash: this.hash,
+              hash,
+              id: { $ne: this.id },
             },
           }))
           .then((videos) => {

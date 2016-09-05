@@ -4,13 +4,13 @@ const fs = require('fs');
 const path = require('path');
 const md = require('markdown-it')();
 
-const log = require('../../libraries/log');
+const log = require('../libraries/log');
 
 module.exports = {
   params(req, res) {
     const privacyText = md.render(
       fs.readFileSync(
-        path.join(__dirname, '..', '..', 'docs', 'privacy.md'), {
+        path.join(__dirname, '..', 'docs', 'privacy.md'), {
           encoding: 'utf8',
         }
       )
