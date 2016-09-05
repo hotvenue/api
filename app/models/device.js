@@ -11,6 +11,10 @@ module.exports = function createLocation(sequelize, DataTypes) {
     identifierForVendor: {
       type: DataTypes.STRING,
     },
+
+    name: {
+      type: DataTypes.STRING,
+    },
   }, {
     classMethods: {
       associate: (models) => {
