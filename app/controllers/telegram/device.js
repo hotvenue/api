@@ -13,42 +13,74 @@ class DeviceController extends HotVenueTelegramBaseController {
   }
 
   deviceHandler($) {
-    models.device
-      .findAll()
-      .then((devices) => Promise.all(devices.map((device) => {
-        const callbackData = `device ${device.id}`;
+    Promise.all([
+      models.location.findAll(),
+      models.device.findAll(),
+    ])
+      .then(([locations, devices]) => {
+        const keyboardDevices = devices.map((device) => {
+          const callbackData = `device ${device.id}`;
 
-        $.waitForCallbackQuery(callbackData, () => {
-          let deviceMsg = `${device.name || device.identifierForVendor}`;
+          $.waitForCallbackQuery(callbackData, () => {
+            let deviceMsg = `${device.name || device.identifierForVendor}`;
+            const keyboardUpdate = locations.map((location) => {
+              const deviceIdShort = device.id.split('-'[0]);
+              const locationIdShort = location.id.split('-')[0];
+              const callbackDataUpdate = `update device ${deviceIdShort} ${locationIdShort}`;
 
-          Promise.resolve()
-            .then(() => device.getLocation())
-            .then((location) => {
-              deviceMsg += `\n- location: ${location.name}`;
-            })
-            .then(() => device.getVideos())
-            .then((videos) => {
-              deviceMsg += `\n- videos: ${videos.length}`;
-            })
-            .then(() => {
-              $.sendMessage(deviceMsg);
+              $.waitForCallbackQuery(callbackDataUpdate, () => {
+                device.locationId = location.id; // eslint-disable-line no-param-reassign
+
+                return device.save()
+                  .then(() => $.sendMessage('Location Changed!'));
+              });
+
+              return [{
+                text: location.name,
+                callback_data: callbackDataUpdate,
+              }];
             });
-        });
 
-        return {
-          device,
-          callback_data: callbackData,
-        };
-      })))
-      .then((deviceObjs) => {
-        const keyboard = deviceObjs.map((deviceObj) => [{
-          text: deviceObj.device.name || deviceObj.device.identifierForVendor,
-          callback_data: deviceObj.callback_data,
-        }]);
+            const callbackDataUpdateLocation = `update device ${device.id}`;
+
+            $.waitForCallbackQuery(callbackDataUpdateLocation, () => {
+              $.sendMessage('Choose the new location:', {
+                reply_markup: JSON.stringify({
+                  inline_keyboard: keyboardUpdate,
+                }),
+              });
+            });
+
+            Promise.resolve()
+              .then(() => device.getLocation())
+              .then((location) => {
+                deviceMsg += `\n- location: ${location.name}`;
+              })
+              .then(() => device.getVideos())
+              .then((videos) => {
+                deviceMsg += `\n- videos: ${videos.length}`;
+              })
+              .then(() => {
+                $.sendMessage(deviceMsg, {
+                  reply_markup: JSON.stringify({
+                    inline_keyboard: [[{
+                      text: 'Update device\'s location',
+                      callback_data: callbackDataUpdateLocation,
+                    }]],
+                  }),
+                });
+              });
+          });
+
+          return [{
+            text: device.name || device.identifierForVendor,
+            callback_data: callbackData,
+          }];
+        });
 
         $.sendMessage('Choose a device:', {
           reply_markup: JSON.stringify({
-            inline_keyboard: keyboard,
+            inline_keyboard: keyboardDevices,
           }),
         });
       });
