@@ -8,9 +8,8 @@ const config = require('config');
 const log = require('../libraries/log');
 
 const options = config.get('job');
-const optionsRedis = config.get('redis');
 
-options.kue.redis = _.assign(optionsRedis, options.kue.redis);
+_.defaults(options.kue.redis, config.get('redis'));
 
 const queue = kue.createQueue(options.kue);
 queue.watchStuckJobs();

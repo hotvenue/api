@@ -1,71 +1,58 @@
 'use strict';
 
-const HotVenueTelegramBaseController = require('./_base');
+const Telegraf = require('telegraf');
 
 const models = require('../../models');
 
-class LocationController extends HotVenueTelegramBaseController {
-  get routes() {
-    return {
-      [/^\/location$/]: 'locationHandler',
-      [/^\/locations$/]: 'locationsHandler',
-    };
-  }
-
-  locationHandler($) {
-    models.location
+module.exports = {
+  location(ctx) {
+    return models.location
       .findAll()
-      .then((locations) => Promise.all(locations.map((location) => {
-        const callbackData = `location ${location.id}`;
+      .then((locations) => {
+        const buttons = locations.map((location) =>
+          Telegraf.Markup.callbackButton(location.name, `location ${location.id}`));
 
-        $.waitForCallbackQuery(callbackData, () => {
-          location
-            .getVideos()
-            .then((videos) => {
-              $.sendMessage(`
+        return ctx.reply('Choose a location:', Telegraf.Markup.inlineKeyboard(buttons, {
+          columns: 1,
+        }).extra());
+      });
+  },
+
+  actionLocation(ctx) {
+    const locationId = ctx.match[1];
+
+    return Promise.resolve()
+      .then(() => models.location.findById(locationId, {
+        include: [
+          { model: models.video },
+        ],
+      }))
+      .then((location) => ctx.reply(`
 ${location.name}
 - hashtag: ${location.hashtag}
 - email: ${location.email}
-- videos: ${videos.length}`);
-            });
-        });
+- videos: ${location.videos.length}`));
+  },
 
-        return {
-          location,
-          callback_data: callbackData,
-        };
-      })))
-      .then((locationObjs) => {
-        const keyboard = locationObjs.map((locationObj) => [{
-          text: locationObj.location.name,
-          callback_data: locationObj.callback_data,
-        }]);
-
-        $.sendMessage('Choose a location:', {
-          reply_markup: JSON.stringify({
-            inline_keyboard: keyboard,
-          }),
-        });
-      });
-  }
-
-  locationsHandler($) {
+  locations(ctx) {
     let msg = 'HotVenue locations:';
 
     models.location
-      .findAll()
+      .findAll({
+        include: [
+          { model: models.video },
+        ],
+      })
       .then((locations) => Promise.all(locations.map((location) => {
-        const locationMsg = `- ${location.name}`;
+        const name = location.name;
+        const video = location.videos ? ` (${location.videos.length})` : '';
 
-        return location.getVideos()
-          .then((videos) => `${locationMsg} (${videos.length})`);
+        return `- ${name} ${video}`;
       })))
       .then((locationMsgs) => {
         msg = `${msg}\n${locationMsgs.join('\n')}`;
 
-        $.sendMessage(msg);
+        ctx.reply(msg);
       });
-  }
-}
-
-module.exports = LocationController;
+  },
+};

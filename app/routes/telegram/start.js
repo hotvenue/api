@@ -1,14 +1,16 @@
 'use strict';
 
 const log = require('../../libraries/log');
-const StartController = require('../../controllers/telegram/start');
+const startController = require('../../controllers/telegram/start');
 
 module.exports = function addStartTelegramRoutes(bot) {
-  bot.api.getMe().then((me) => {
-    log.server.debug(me);
+  bot.telegram.getMe().then((me) => {
+    log.telegram.debug(me);
   });
 
-  bot.router
-    .when('/start', new StartController());
+  bot
+    .command('start', startController.start)
+    .hears(/^([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$/, startController.hearsEmail)
+    .action(/^enable (.*)$/, startController.actionEnable);
 };
 

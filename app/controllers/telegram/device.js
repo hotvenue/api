@@ -1,108 +1,128 @@
 'use strict';
 
-const HotVenueTelegramBaseController = require('./_base');
+const Telegraf = require('telegraf');
 
 const models = require('../../models');
+const cache = require('../../libraries/cache');
 
-class DeviceController extends HotVenueTelegramBaseController {
-  get routes() {
-    return {
-      [/^\/device$/]: 'deviceHandler',
-      [/^\/devices$/]: 'devicesHandler',
-    };
-  }
+module.exports = {
+  device(ctx) {
+    return models.device
+      .findAll()
+      .then((devices) => {
+        const buttons = devices.map((device) =>
+          Telegraf.Markup.callbackButton(device.name || device.identifierForVendor,
+            `device ${device.id}`));
 
-  deviceHandler($) {
-    Promise.all([
-      models.location.findAll(),
-      models.device.findAll(),
-    ])
-      .then(([locations, devices]) => {
-        const keyboardDevices = devices.map((device) => {
-          const callbackData = `device ${device.id}`;
-
-          $.waitForCallbackQuery(callbackData, () => {
-            let deviceMsg = `${device.name || device.identifierForVendor}`;
-            const keyboardUpdate = locations.map((location) => {
-              const deviceIdShort = device.id.split('-'[0]);
-              const locationIdShort = location.id.split('-')[0];
-              const callbackDataUpdate = `update device ${deviceIdShort} ${locationIdShort}`;
-
-              $.waitForCallbackQuery(callbackDataUpdate, () => {
-                device.locationId = location.id; // eslint-disable-line no-param-reassign
-
-                return device.save()
-                  .then(() => $.sendMessage('Location Changed!'));
-              });
-
-              return [{
-                text: location.name,
-                callback_data: callbackDataUpdate,
-              }];
-            });
-
-            const callbackDataUpdateLocation = `update device ${device.id}`;
-
-            $.waitForCallbackQuery(callbackDataUpdateLocation, () => {
-              $.sendMessage('Choose the new location:', {
-                reply_markup: JSON.stringify({
-                  inline_keyboard: keyboardUpdate,
-                }),
-              });
-            });
-
-            Promise.resolve()
-              .then(() => device.getLocation())
-              .then((location) => {
-                deviceMsg += `\n- location: ${location.name}`;
-              })
-              .then(() => device.getVideos())
-              .then((videos) => {
-                deviceMsg += `\n- videos: ${videos.length}`;
-              })
-              .then(() => {
-                $.sendMessage(deviceMsg, {
-                  reply_markup: JSON.stringify({
-                    inline_keyboard: [[{
-                      text: 'Update device\'s location',
-                      callback_data: callbackDataUpdateLocation,
-                    }]],
-                  }),
-                });
-              });
-          });
-
-          return [{
-            text: device.name || device.identifierForVendor,
-            callback_data: callbackData,
-          }];
-        });
-
-        $.sendMessage('Choose a device:', {
-          reply_markup: JSON.stringify({
-            inline_keyboard: keyboardDevices,
-          }),
-        });
+        return ctx.reply('Choose a device:', Telegraf.Markup.inlineKeyboard(buttons, {
+          columns: 1,
+        }).extra());
       });
-  }
+  },
 
-  devicesHandler($) {
+  actionDevice(ctx) {
+    const deviceId = ctx.match[1];
+
+    return models.device
+      .findById(deviceId, {
+        include: [
+          { model: models.location },
+          { model: models.video },
+        ],
+      })
+      .then((device) => {
+        let msg = device.name || device.identifierForVendor;
+
+        if (device.location) {
+          msg += `\n- location: ${device.location.name}`;
+        }
+
+        if (device.videos) {
+          msg += `\n- videos: ${device.videos.length}`;
+        }
+
+        ctx.reply(msg, Telegraf.Markup.inlineKeyboard([
+          Telegraf.Markup.callbackButton('Update device\'s location', `device loc ${device.id}`),
+        ]).extra());
+      });
+  },
+
+  actionDeviceLocation(ctx) {
+    const deviceId = ctx.match[1];
+
+    return new Promise((resolve, reject) => {
+      cache.set(`telegraf:${ctx.from.id}:device`, deviceId, (err, res) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve(res);
+      });
+    })
+      .then(() => models.location.findAll())
+      .then((locations) => {
+        const buttons = locations.map((location) =>
+          Telegraf.Markup.callbackButton(location.name, `device loc set ${location.id}`));
+
+        return ctx.reply('Choose a location:', Telegraf.Markup.inlineKeyboard(buttons, {
+          columns: 1,
+        }).extra());
+      });
+  },
+
+  actionDeviceLocationSet(ctx) {
+    const locationId = ctx.match[1];
+
+    return new Promise((resolve, reject) => {
+      cache.get(`telegraf:${ctx.from.id}:device`, (err, reply) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve(reply);
+      });
+    })
+      .then((deviceId) => models.device.update({ locationId }, {
+        where: {
+          id: deviceId,
+        },
+      }))
+      .then(() => ctx.reply('Location changed!'))
+      .then(() => new Promise((resolve, reject) => {
+        cache.del(`telegraf:${ctx.from.id}:device`, (err, reply) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          resolve(reply);
+        });
+      }));
+  },
+
+  devices(ctx) {
     let msg = 'HotVenue devices:';
 
     models.device
-      .findAll()
+      .findAll({
+        include: [
+          { model: models.video },
+          { model: models.location },
+        ],
+      })
       .then((devices) => Promise.all(devices.map((device) => {
-        const deviceMsg = `- ${device.name || device.identifierForVendor}`;
+        const name = device.name || device.identifierForVendor;
+        const location = device.location ? device.location.name : 'no location';
+        const video = device.videos ? ` (${device.videos.length})` : '';
 
-        return device.getLocation()
-          .then((location) => `${deviceMsg} @ ${location ? location.name : 'no location'}`);
+        return `- ${name} @ ${location}${video}`;
       })))
       .then((deviceMsgs) => {
         msg = `${msg}\n${deviceMsgs.join('\n')}`;
 
-        $.sendMessage(msg);
+        ctx.reply(msg);
       });
-  }
-}
-
-module.exports = DeviceController;
+  },
+};

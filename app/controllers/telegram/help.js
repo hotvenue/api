@@ -1,16 +1,8 @@
 'use strict';
 
-const HotVenueTelegramBaseController = require('./_base');
-
-class HelpController extends HotVenueTelegramBaseController {
-  get routes() {
-    return {
-      '/help': 'helpHandler',
-    };
-  }
-
-  helpHandler($) {
-    $.sendMessage(`
+module.exports = {
+  help(ctx) {
+    return ctx.reply(`
 Commands:
 - /video - retrieves some video stats
 
@@ -19,7 +11,5 @@ Commands:
 
 - /devices - retrieves the list of devices, with some stats
 - /device - more in depth stats of a single device`);
-  }
-}
-
-module.exports = HelpController;
+  },
+};

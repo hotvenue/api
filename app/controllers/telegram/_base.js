@@ -1,33 +1,27 @@
 'use strict';
 
-const Telegram = require('telegram-node-bot');
-const TelegramBaseController = Telegram.TelegramBaseController;
-
 const models = require('../../models');
+const log = require('../../libraries/log');
 
-class HotVenueTelegramBaseController extends TelegramBaseController {
-  methodForCommand(command = '/help') {
-    const method = super.methodForCommand(command);
+module.exports = {
+  checkEnabled(ctx, next) {
+    const telegramId = ctx.from.id;
 
-    return function methodForCommand($) {
-      models.user
-        .findOne({
-          where: {
-            telegramId: $.message.from.id,
-          },
-        })
-        .then((user) => {
-          if (!user) {
-            throw new Error('User not allowed');
-          }
+    return Promise.resolve()
+      .then(() => models.user.findOne({
+        where: {
+          telegramId,
+        },
+      }))
+      .then((user) => {
+        if (!user) {
+          log.telegram.warn(`User ${telegramId} not allowed!`);
 
-          method($);
-        })
-        .catch(() => {
-          $.sendMessage('User not allowed to query the telegram bot! Please type /start');
-        });
-    };
-  }
-}
+          ctx.reply('User not allowed to query the Telegram Bot! Please type /start');
+          return true;
+        }
 
-module.exports = HotVenueTelegramBaseController;
+        return next();
+      });
+  },
+};

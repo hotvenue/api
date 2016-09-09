@@ -1,12 +1,18 @@
 'use strict';
 
-const DeviceController = require('../../controllers/telegram/device');
+const baseController = require('../../controllers/telegram/_base');
+const deviceController = require('../../controllers/telegram/device');
 
 module.exports = function addStartTelegramRoutes(bot) {
-  const device = new DeviceController();
-
-  bot.router
-    .when(/^\/devices$/, device)
-    .when(/^\/device$/, device);
+  bot
+    .command('devices', baseController.checkEnabled, deviceController.devices)
+    .command('device', baseController.checkEnabled, deviceController.device)
+    .action(/^device ([^\s]+)$/, baseController.checkEnabled, deviceController.actionDevice)
+    .action(/^device loc ([^\s]+)$/,
+      baseController.checkEnabled,
+      deviceController.actionDeviceLocation)
+    .action(/^device loc set ([^\s]+)$/,
+      baseController.checkEnabled,
+      deviceController.actionDeviceLocationSet);
 };
 
