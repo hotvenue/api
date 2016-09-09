@@ -51,6 +51,11 @@ function addOtherRoutes(app, relativePath) {
           `/${relativeFilePath}`,
           require(`./${relativeFilePath}`) // eslint-disable-line global-require
         );
+
+        app.use(
+          `/api/${relativeFilePath}`,
+          require(`./${relativeFilePath}`) // eslint-disable-line global-require
+        );
       }
     });
 }
