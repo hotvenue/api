@@ -11,7 +11,7 @@ require('./routes/index')(app);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
+  const err = new Error(`Not found: ${req.url}`);
 
   err.status = 404;
 
@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 // error handlers
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   if (process.env.NODE_ENV !== 'test') {
-    log.server.error(err);
+    log.server.error(err.message);
   }
 
   res.status(err.status || 500);
