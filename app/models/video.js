@@ -2,6 +2,7 @@
 
 const path = require('path');
 const config = require('config');
+const moment = require('moment');
 
 const log = require('../libraries/log');
 const utils = require('../libraries/utils');
@@ -15,6 +16,15 @@ module.exports = function createVideo(sequelize, DataTypes) {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
+    },
+
+    name: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const date = moment(this.createdAt).format('YYYY-MM-DD_HH-mm-ss');
+
+        return `video-${date}${configApp.extension.video}`;
+      },
     },
 
     file: {
@@ -117,6 +127,15 @@ module.exports = function createVideo(sequelize, DataTypes) {
         return [
           configS3.link,
           configS3.bucket,
+          this.urlEditedARelative,
+        ].join('/');
+      },
+    },
+
+    urlEditedARelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
           configS3.folder.video.editedA,
           this.id + this.extension,
         ].join('/');
