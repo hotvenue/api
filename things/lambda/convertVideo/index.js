@@ -136,6 +136,7 @@ function doFfmpegA(original, watermark, video) {
     '-i', original,
     '-i', original,
     '-filter_complex', 'concat=n=3:v=1:a=1',
+    '-filter:v', 'crop=in_w:in_w',
     '-y', tmpVideo1,
   ];
 
