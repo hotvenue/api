@@ -37,6 +37,9 @@ module.exports = function maidJob() {
           if (video2parse.user != null) {
             log.jobs.info(`Sending email to ${video2parse.user.email}`);
 
+            const emailFile = video2parse.device.location.email === configEmail.events ?
+              'email-video-promo.md' : 'email-video.md';
+
             return cloud.download(video2parse.urlEditedARelative)
               .then((videoStream) => email.send({
                 from: configEmail.from,
@@ -44,7 +47,7 @@ module.exports = function maidJob() {
                 subject: 'Here is your video!',
                 html: md.render(
                   fs.readFileSync(
-                    path.join(__dirname, '..', 'docs', 'email-video.md'), {
+                    path.join(__dirname, '..', 'docs', emailFile), {
                       encoding: 'utf8',
                     }
                   )
