@@ -128,21 +128,17 @@ function doFfprobe(filename) {
 }
 
 function doFfmpegA(original, watermark, video) {
-  const ext = path.extname(original);
-  const tmpVideo1 = path.join(tmpDir, `video-tmp-${getRandomString()}${ext}`);
+  const size = configApp.video.size;
+  const filterComplex = [];
 
-  const args1 = [
-    '-i', original,
-    '-i', original,
-    '-i', original,
-    '-filter_complex', 'crop=in_w:in_w; concat=n=3:v=1:a=1',
-    '-y', tmpVideo1,
-  ];
+  filterComplex.push('[0:v][0:v][0:v] concat=n=3 [v]'); // loop video 3 times
+  filterComplex.push(`[v] crop=${size.join(':')} [v]`); // crop video 360x360
+  filterComplex.push('[v][1:v] overlay=0:H-h-0'); // apply overlay
 
-  const args2 = [
-    '-i', tmpVideo1,
+  const args = [
+    '-i', original,
     '-i', watermark,
-    '-filter_complex', 'overlay=0:H-h-0',
+    '-filter_complex', filterComplex.join(', '),
     '-an',
     '-y', video,
   ];
@@ -155,23 +151,7 @@ function doFfmpegA(original, watermark, video) {
     .then(() => { console.log('First step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
-        .execFile(ffmpeg, args1, options, (err, stdout, stderr) => {
-          if (err) {
-            reject(err);
-
-            return;
-          }
-
-          console.log(stdout);
-          console.log(stderr);
-
-          resolve();
-        });
-    }))
-    .then(() => { console.log('Second step'); })
-    .then(() => new Promise((resolve, reject) => {
-      childProcess
-        .execFile(ffmpeg, args2, options, (err, stdout, stderr) => {
+        .execFile(ffmpeg, args, options, (err, stdout, stderr) => {
           if (err) {
             reject(err);
 
