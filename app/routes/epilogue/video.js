@@ -50,6 +50,8 @@ module.exports = {
                 })
                 .then((device) => {
                   context.attributes.deviceId = device.id; // eslint-disable-line no-param-reassign
+                  // eslint-disable-next-line no-param-reassign
+                  context.attributes.locationId = device.locationId;
 
                   delete req.body.device; // eslint-disable-line no-param-reassign
 

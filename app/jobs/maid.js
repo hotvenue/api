@@ -3,8 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('config');
-const moment = require('moment');
-const request = require('request');
 const md = require('markdown-it')();
 
 const log = require('../libraries/log');
@@ -39,16 +37,17 @@ module.exports = function maidJob() {
           if (video2parse.user != null) {
             log.jobs.info(`Sending email to ${video2parse.user.email}`);
 
-            const date = moment(video2parse.createdAt).format('YYYY-MM-DD_HH-mm-ss');
+            const emailFile = video2parse.device.location.email === configEmail.events ?
+              'email-video-promo.md' : 'email-video.md';
 
-            return email
-              .send({
+            return cloud.download(video2parse.urlEditedARelative)
+              .then((videoStream) => email.send({
                 from: configEmail.from,
                 to: `${configEmail.toName} <${video2parse.user.email}>`,
                 subject: 'Here is your video!',
                 html: md.render(
                   fs.readFileSync(
-                    path.join(__dirname, '..', 'docs', 'email-video.md'), {
+                    path.join(__dirname, '..', 'docs', emailFile), {
                       encoding: 'utf8',
                     }
                   )
@@ -56,10 +55,10 @@ module.exports = function maidJob() {
                     .replace(/\$\{HASHTAG}\$/g, video2parse.device.location.hashtag)
                 ),
                 attachments: [{
-                  filename: `video-${date}${video2parse.extension}`,
-                  content: request(video2parse.urlEditedA),
+                  filename: video2parse.name,
+                  content: videoStream,
                 }],
-              })
+              }))
               .then((result) => {
                 log.jobs.debug('Email sent');
                 log.jobs.silly(result);
@@ -175,12 +174,20 @@ module.exports = function maidJob() {
   }
 
   function maid() {
+    if (process.env.NODE_ENV === 'test') {
+      return Promise.resolve();
+    }
+
     return Promise.resolve()
       .then(() => maidCheckVideo())
       .then(() => maidSendVideo());
   }
 
-  setInterval(maid, configJobs.maid.delay);
+  if (configJobs.autostart) {
+    setInterval(maid, configJobs.maid.delay);
+  }
 
-  return {};
+  return {
+    maid,
+  };
 };

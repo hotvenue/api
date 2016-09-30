@@ -25,6 +25,7 @@ describe('Location', () => {
     common.request(common.server)
       .post('/location')
       .attach('frame', 'test/assets/sample-image.jpg')
+      .attach('frameThanks', 'test/assets/sample-image.jpg')
       .attach('watermark', 'test/assets/watermark.png')
       .field('name', locationName)
       .field('hashtag', hashtag)
@@ -45,21 +46,27 @@ describe('Location', () => {
         common.expect(res.body).to.have.property('email').and.equal(email);
         common.expect(res.body).to.have.property('geoLatitude').and.equal(geoLatitude);
         common.expect(res.body).to.have.property('geoLongitude').and.equal(geoLongitude);
+        common.expect(res.body).to.have.property('frame');
+        common.expect(res.body).to.have.property('frameThanks');
         common.expect(res.body).to.have.property('createdAt')
-            .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
+          .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')
-            .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
+          .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
 
         common.location = res.body;
 
-        const imageFramePath = path.join(config.get('folder').upload,
-          common.location.id + common.location.extension);
+        const imageFramePath = path.join(config.get('folder').upload, common.location.frame);
+        const imageFrameThanksPath = path.join(config.get('folder').upload,
+          common.location.frameThanks);
 
         const imageFrameStat = fs.statSync(imageFramePath);
+        const imageFrameThanksStat = fs.statSync(imageFrameThanksPath);
 
         common.expect(imageFrameStat.isFile()).to.equal(true);
+        common.expect(imageFrameThanksStat.isFile()).to.equal(true);
 
         fs.unlinkSync(imageFramePath);
+        fs.unlinkSync(imageFrameThanksPath);
 
         const imageWatermarkPath = path.join(config.get('folder').upload,
           `${common.location.id}.png`);
@@ -69,6 +76,9 @@ describe('Location', () => {
         common.expect(imageWatermarkStat.isFile()).to.equal(true);
 
         fs.unlinkSync(imageWatermarkPath);
+
+        delete common.location.frame;
+        delete common.location.frameThanks;
 
         done();
       });

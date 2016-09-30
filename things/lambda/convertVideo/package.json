@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "rm -rf node_modules",
     "build": "npm run pretest",
-    "postbuild": "chmod +x ./ffprobe && chmod +x ./ffmpeg && zip -r convertVideo.zip .",
+    "postbuild": "chmod +x ./ffprobe && chmod +x ./ffmpeg && zip -r -q convertVideo.zip .",
     "pretest": "npm run pretest:cp && npm run pretest:install",
     "pretest:cp": "cp -r ../../../config .",
     "pretest:install": "npm install",

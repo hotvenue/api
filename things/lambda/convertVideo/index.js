@@ -6,7 +6,8 @@ const fs = require('fs');
 const os = require('os');
 const aws = require('aws-sdk');
 const path = require('path');
-const sharp = require('sharp');
+const sharp = require('sharp'); // eslint-disable-line import/no-unresolved
+const crypto = require('crypto');
 const config = require('config');
 const childProcess = require('child_process');
 
@@ -24,6 +25,10 @@ let s3;
 
 const uuidRegex = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
 
+function getRandomString() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
 function validateVideoFile(source) {
   const filenameRegex = new RegExp(`${uuidRegex}_${uuidRegex}\.[a-z]+`);
   const filename = path.basename(source.Key);
@@ -36,7 +41,7 @@ function validateVideoFile(source) {
 }
 
 function validateImageFile(source, ext) {
-  const filenameRegex = new RegExp(`${uuidRegex}\\${ext}`);
+  const filenameRegex = new RegExp(`${uuidRegex}(-thanks)?\\${ext}`);
   const filename = path.basename(source.Key);
 
   if (!filename.match(filenameRegex)) {
@@ -123,21 +128,17 @@ function doFfprobe(filename) {
 }
 
 function doFfmpegA(original, watermark, video) {
-  const ext = path.extname(original);
-  const tmpVideo1 = path.join(tmpDir, `video-tmp-1${ext}`);
+  const size = configApp.video.size;
+  const filterComplex = [];
 
-  const args1 = [
-    '-i', original,
-    '-i', original,
-    '-i', original,
-    '-filter_complex', 'concat=n=3:v=1:a=1',
-    '-y', tmpVideo1,
-  ];
+  filterComplex.push('[0:v][0:v][0:v] concat=n=3 [v]'); // loop video 3 times
+  filterComplex.push(`[v] crop=${size.join(':')} [v]`); // crop video 360x360
+  filterComplex.push('[v][1:v] overlay=0:H-h-0'); // apply overlay
 
-  const args2 = [
-    '-i', tmpVideo1,
+  const args = [
+    '-i', original,
     '-i', watermark,
-    '-filter_complex', 'overlay=0:H-h-0',
+    '-filter_complex', filterComplex.join(', '),
     '-an',
     '-y', video,
   ];
@@ -150,23 +151,7 @@ function doFfmpegA(original, watermark, video) {
     .then(() => { console.log('First step'); })
     .then(() => new Promise((resolve, reject) => {
       childProcess
-        .execFile(ffmpeg, args1, options, (err, stdout, stderr) => {
-          if (err) {
-            reject(err);
-
-            return;
-          }
-
-          console.log(stdout);
-          console.log(stderr);
-
-          resolve();
-        });
-    }))
-    .then(() => { console.log('Second step'); })
-    .then(() => new Promise((resolve, reject) => {
-      childProcess
-        .execFile(ffmpeg, args2, options, (err, stdout, stderr) => {
+        .execFile(ffmpeg, args, options, (err, stdout, stderr) => {
           if (err) {
             reject(err);
 
@@ -255,10 +240,10 @@ function handlerVideo(event, context, done) {
   const extWatermark = configApp.extension.watermark;
   const ext2beImage = configApp.extension.preview;
 
-  const tmpOriginal = path.join(tmpDir, `original${ext}`);
-  const tmpWatermark = path.join(tmpDir, `watermark${extWatermark}`);
-  const tmpVideo = path.join(tmpDir, `video${ext2beVideo}`);
-  const tmpThumbnail = path.join(tmpDir, `thumbnail${ext2beImage}`);
+  const tmpOriginal = path.join(tmpDir, `original-${getRandomString()}${ext}`);
+  const tmpWatermark = path.join(tmpDir, `watermark-${getRandomString()}${extWatermark}`);
+  const tmpVideo = path.join(tmpDir, `video-${getRandomString()}${ext2beVideo}`);
+  const tmpThumbnail = path.join(tmpDir, `thumbnail-${getRandomString()}${ext2beImage}`);
 
   return Promise.resolve()
     .then(() => validateVideoFile(source))
@@ -273,7 +258,7 @@ function handlerVideo(event, context, done) {
     .then(() => { console.log('Original video uploaded!'); })
     .then(() => download({
       Bucket: s3Event.bucket.name,
-      Key: `${configAws.s3.folder.location.watermark}/${locationId}${extWatermark}`,
+      Key: `${configAws.s3.folder.location.watermark}/${locationId}@video1${extWatermark}`,
     }, tmpWatermark))
     .then(() => { console.log('Watermark downloaded!'); })
     .then(() => doFfmpegA(tmpOriginal, tmpWatermark, tmpVideo))
@@ -307,10 +292,10 @@ function handlerImage(what, event, context, done) {
   const sizes = configApp.location[what].sizes;
   const sizeKeys = Object.keys(sizes);
 
-  const tmpOriginal = path.join(tmpDir, `original${ext}`);
+  const tmpOriginal = path.join(tmpDir, `original-${getRandomString()}${ext}`);
   const tmpImage = {};
   sizeKeys.forEach((sizeKey) => {
-    tmpImage[sizeKey] = path.join(tmpDir, `image${sizeKey}${ext2be}`);
+    tmpImage[sizeKey] = path.join(tmpDir, `image-${getRandomString()}-${sizeKey}${ext2be}`);
   });
 
   return Promise.resolve()

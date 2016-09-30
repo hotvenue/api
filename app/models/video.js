@@ -2,6 +2,7 @@
 
 const path = require('path');
 const config = require('config');
+const moment = require('moment');
 
 const log = require('../libraries/log');
 const utils = require('../libraries/utils');
@@ -17,40 +18,68 @@ module.exports = function createVideo(sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4,
     },
 
+    name: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const date = moment(this.createdAt).format('YYYY-MM-DD_HH-mm-ss');
+
+        return `video-${date}${configApp.extension.video}`;
+      },
+    },
+
     file: {
       type: DataTypes.VIRTUAL,
-      /**
-       * @param {Object} file
-       * @param {string} file.fieldname - The name of the param passed in the POST
-       * @param {string} file.originalname
-       * @param {string} file.encoding
-       * @param {string} file.mimetype
-       * @param {string} file.destination - The destination directory path
-       * @param {string} file.filename
-       * @param {string} file.path - The destination file path
-       * @param {string} file.size - Filesize in bytes
-       */
       set(file) {
+        const models = require('../models'); // eslint-disable-line global-require
+
         const ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
         this.extension = process.env.NODE_ENV === 'test' ? ext : configApp.extension.video;
 
         const prefixFile = `${configS3.folder.video.tmp}/${this.id}`;
 
+        let hash;
+
         Promise.resolve()
-          .then(() => this.getDevice())
-          .then((device) => device.getLocation())
-          .then((location) => utils.uploadFile({
+          .then(() => utils.hashFile(file.path))
+          .then((tmpHash) => {
+            hash = tmpHash;
+
+            return models.video.update({ hash }, {
+              where: {
+                id: this.id,
+              },
+            });
+          })
+          .then(() => models.video.findAll({
+            where: {
+              hash,
+              id: { $ne: this.id },
+            },
+          }))
+          .then((videos) => {
+            if (videos.length > 0) {
+              throw new Error('Video already uploaded!');
+            }
+
+            return true;
+          })
+          .then(() => utils.uploadFile({
             what: 'video',
             oldPath: file.path,
             newPathLocal: path.join(file.destination, this.id + ext),
-            newPathCloud: `${prefixFile}_${location.id}${ext}`,
+            newPathCloud: `${prefixFile}_${this.locationId}${ext}`,
           }))
           .catch((err) => {
             log.error('Error while uploading the video file');
+            log.debug(err);
 
             throw err;
           });
       },
+    },
+
+    hash: {
+      type: DataTypes.STRING,
     },
 
     extension: {
@@ -98,6 +127,15 @@ module.exports = function createVideo(sequelize, DataTypes) {
         return [
           configS3.link,
           configS3.bucket,
+          this.urlEditedARelative,
+        ].join('/');
+      },
+    },
+
+    urlEditedARelative: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return [
           configS3.folder.video.editedA,
           this.id + this.extension,
         ].join('/');
@@ -129,6 +167,7 @@ module.exports = function createVideo(sequelize, DataTypes) {
       associate: (models) => {
         video.belongsTo(models.user);
         video.belongsTo(models.device);
+        video.belongsTo(models.location);
       },
     },
   });
