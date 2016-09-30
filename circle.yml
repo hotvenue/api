@@ -22,8 +22,13 @@ dependencies:
 
 test:
   post:
-    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1; sleep 100
-    - curl --retry 10 --retry-delay 5 -v http://127.0.0.1:3000
+    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1
+    - sleep 10
+    - curl --retry 10 --retry-delay 5 http://127.0.0.1:3000
     - docker ps
 
-# docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1
+# deployment:
+#   ecs:
+#     branch: master
+#     commands:
+#       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1
