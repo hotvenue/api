@@ -2,7 +2,7 @@
   "apps": [{
     "name": "HotVenue",
     "script": "./bin/www",
-    "instances": 0,
+    "instances": 1,
     "exec_mode": "cluster",
     "max_restarts": 5,
     "max_memory_restart": "450M",
