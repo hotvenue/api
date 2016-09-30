@@ -5,6 +5,7 @@
 const path = require('path');
 const http = require('http');
 const Umzug = require('umzug');
+const config = require('config');
 
 const app = require('../app/index');
 const models = require('../app/models');
@@ -88,6 +89,7 @@ Promise.resolve()
   .then(syncDb)
   .then(afterDbSync)
   .catch((err) => {
+    log.db.error(config.database.username);
     log.db.error('Error while db sync & migrate');
     log.db.debug(err);
   });
