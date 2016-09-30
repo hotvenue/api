@@ -6,4 +6,5 @@ machine:
     version: 6.5.0
 
 dependencies:
-  post: npm install sqlite3
+  post:
+    - npm install sqlite3
