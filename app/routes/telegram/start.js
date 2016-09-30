@@ -4,9 +4,11 @@ const log = require('../../libraries/log');
 const startController = require('../../controllers/telegram/start');
 
 module.exports = function addStartTelegramRoutes(bot) {
-  bot.telegram.getMe().then((me) => {
-    log.telegram.debug(me);
-  });
+  if (process.env.NODE_ENV !== 'test') {
+    bot.telegram.getMe().then((me) => {
+      log.telegram.debug(me);
+    });
+  }
 
   bot
     .command('start', startController.start)
