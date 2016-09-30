@@ -89,7 +89,6 @@ Promise.resolve()
   .then(syncDb)
   .then(afterDbSync)
   .catch((err) => {
-    log.db.error(config.database.username);
     log.db.error('Error while db sync & migrate');
     log.db.debug(err);
   });
