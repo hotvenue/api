@@ -8,10 +8,12 @@ machine:
 dependencies:
   post:
     - npm install sqlite3
-    - docker build --rm=false -t $AWS_ACCOUNT_ID.dkr.ecr.AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1 .
+    - pip install awscli
+    - docker build --rm=false -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1 .
 
 test:
   post:
-    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1
+    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1
     - sleep 20
     - curl --retry 10 --retry-delay 5 -v http://localhost:3000
+    - docker ps
