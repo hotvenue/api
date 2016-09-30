@@ -4,16 +4,26 @@ machine:
     - docker
   node:
     version: 6.5.0
+  environment:
+    # AWS_ACCOUNT_ID
+    # AWS_DEFAULT_REGION
+    # AWS_ACCESS_KEY_ID
+    # AWS_SECRET_ACCESS_KEY
+    APP_NAME: hotvenue-server
 
 dependencies:
   post:
     - npm install sqlite3
     - pip install awscli
-    - docker build --rm=false -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1 .
+    - docker build --rm=false -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1 .
+    - aws configure set default.region $AWS_DEFAULT_REGION
+    - aws configure set default.output json
+    - eval $(aws ecr get-login)
 
 test:
   post:
-    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/hotvenue-server:$CIRCLE_SHA1
-    - sleep 20
-    - curl --retry 10 --retry-delay 5 -v http://localhost:3000
+    - docker run -d -p 3000:3000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1; sleep 100
+    - curl --retry 10 --retry-delay 5 -v http://127.0.0.1:3000
     - docker ps
+
+# docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_SHA1
