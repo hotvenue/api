@@ -47,6 +47,10 @@ function errorMiddleware(err) {
 }
 
 module.exports = function addTelegramRoutes() {
+  if (!tgConfig.enable) {
+    return;
+  }
+
   const bot = new Telegraf(tgConfig.id);
 
   bot.use(loggingMiddleware);
