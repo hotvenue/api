@@ -2,10 +2,13 @@
 
 'use strict';
 
+if (process.env.CIRCLECI === 'yes') {
+  process.env.NODE_ENV = 'test-circle';
+}
+
 const path = require('path');
 const http = require('http');
 const Umzug = require('umzug');
-const config = require('config');
 
 const app = require('../app/index');
 const models = require('../app/models');
