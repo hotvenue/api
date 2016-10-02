@@ -31,4 +31,5 @@ deployment:
     branch: master
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
+      - chmod +x things/circleci/deploy-server.sh
       - ./things/circleci/deploy-server.sh
