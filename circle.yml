@@ -22,7 +22,9 @@ dependencies:
 
 test:
   override:
-    - npm run test:circle
+    - npm run test:circle:
+      environment:
+        MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
   post:
     - docker run -d -p 3000:3000 -e "CIRCLECI=yes" --net="host" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
     - sleep 60
