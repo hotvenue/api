@@ -10,8 +10,10 @@
     "eslint": "eslint .",
     "check": "npm run eslint",
     "mocha": "mocha --reporter spec --timeout 30s --bail test/index.js",
+    "mocha:circle": "mocha --reporter mocha-junit-reporter --timeout 30s --bail test/index.js",
     "pretest": "npm install",
     "test": "npm run check && NODE_ENV=test npm run mocha",
+    "test:circle": "npm run check && NODE_ENV=test npm run mocha:circle",
     "test:cov": "nyc npm test"
   },
   "dependencies": {
@@ -54,6 +56,7 @@
     "eslint-plugin-jsx-a11y": "^1.2.0",
     "eslint-plugin-react": "^5.1.1",
     "mocha": "^2.4.5",
+    "mocha-junit-reporter": "^1.12.0",
     "nodemon": "^1.9.2",
     "nyc": "^6.4.4",
     "sqlite3": "^3.1.3",
