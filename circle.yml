@@ -30,5 +30,5 @@ deployment:
   ecs:
     branch: master
     commands:
-#      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
-      - docker ps
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
+      - ./things/circleci/deploy-server.sh
