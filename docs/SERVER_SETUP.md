@@ -21,7 +21,7 @@
     sudo su -c "env PATH=$PATH:/home/ubuntu/.nvm/versions/node/v6.2.1/bin pm2 startup linux -u ubuntu --hp /home/ubuntu"
     
     # Clone the repo
-    git clone https://bitbucket.org/spotview/server.git spotvenue-server
-    cd spotvenue-server
+    git clone https://bitbucket.org/hotvenue/server.git hotvenue-server
+    cd hotvenue-server
     npm run start:production
     
