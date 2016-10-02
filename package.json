@@ -2,6 +2,7 @@
   "name": "hotvenue-server",
   "version": "0.1.0",
   "private": true,
+  "deploy": true,
   "scripts": {
     "pm2:production": "pm2 startOrReload config/pm2/production.json",
     "prestart": "npm install",

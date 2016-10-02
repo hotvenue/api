@@ -24,10 +24,11 @@ test:
   post:
     - docker run -d -p 3000:3000 -e "CIRCLECI=yes" --net="host" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
     - sleep 60
-    - curl --retry 10 --retry-delay 5 http://127.0.0.1:3000
+    - curl --retry 10 --retry-delay 5 http://127.0.0.1:3000 | grep '"deploy":truer'
 
-# deployment:
-#   ecs:
-#     branch: master
-#     commands:
-#       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
+deployment:
+  ecs:
+    branch: master
+    commands:
+#      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CIRCLE_BUILD_NUM
+      - docker ps
