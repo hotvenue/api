@@ -1,6 +1,0 @@
-{
-  "extends": "es2015/node",
-  "rules": {
-    "no-console": [0]
-  }
-}
