@@ -12,6 +12,8 @@ const cloud = require('../libraries/cloud');
 const jobs = require('../jobs');
 const models = require('../models');
 
+const configApp = config.get('app');
+const configAws = config.get('aws');
 const configJobs = config.get('jobs');
 const configFolder = config.get('folder');
 
@@ -51,6 +53,13 @@ ${privacyText}
       }],
       */
       checkbox: [],
+    });
+  },
+
+  config(req, res) {
+    res.json({
+      app: configApp,
+      aws: configAws.s3,
     });
   },
 
