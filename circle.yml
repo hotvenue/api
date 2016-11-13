@@ -9,9 +9,24 @@ machine:
     # AWS_DEFAULT_REGION
     # AWS_ACCESS_KEY_ID
     # AWS_SECRET_ACCESS_KEY
+    #
+    # LOCAL_ES_ENDPOINT
+    # LOCAL_IAM_KEY
+    # LOCAL_IAM_SECRET
+    # LOCAL_JOBS_SECRET
+    # LOCAL_TELEGRAM_ADMIN
+    #
+    # PROD_DB_DATABASE
+    # PROD_DB_HOSTNAME
+    # PROD_DB_PASSWORD
+    # PROD_DB_USERNAME
+    # PROD_REDIS_HOST
+    # PROD_TELEGRAM_ID
     APP_NAME: hotvenue-server
 
 dependencies:
+  pre:
+    - ./things/circleci/pre-dependencies.sh
   post:
     - npm install sqlite3
     - pip install awscli
