@@ -189,6 +189,13 @@ module.exports = function createLocation(sequelize, DataTypes) {
         return files;
       },
     },
+
+    checkboxes: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return configApp.location.checkboxes[`${this.email ? 'private' : 'public'}Events`];
+      },
+    },
   }, {
     classMethods: {
       associate: (models) => {

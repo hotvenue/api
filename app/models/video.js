@@ -100,6 +100,17 @@ module.exports = function createVideo(sequelize, DataTypes) {
       defaultValue: false,
     },
 
+    privacy: {
+      type: DataTypes.STRING,
+      defaultValue: '{"name":true,"publish":true}',
+      set(privacy) {
+        this.setDataValue('privacy', JSON.stringify(privacy));
+      },
+      get() {
+        return JSON.parse(this.getDataValue('privacy'));
+      },
+    },
+
     urlOriginal: {
       type: DataTypes.VIRTUAL,
       get() {
