@@ -3,9 +3,9 @@
 const common = require('../common');
 
 describe('Device', () => {
-  it('PUT /device/:id should edit the device', (done) => {
+  it('PUT /devices/:id should edit the device', (done) => {
     common.request(common.server)
-      .put(`/device/${common.device.id}`)
+      .put(`/devices/${common.device.id}`)
       .send({
         locationId: common.location.id,
       })

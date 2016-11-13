@@ -7,15 +7,15 @@ const config = require('config');
 const common = require('../common');
 
 describe('Location', () => {
-  it('GET /location should return an empty list', (done) => {
+  it('GET /locations should return an empty list', (done) => {
     common.request(common.server)
-      .get('/location')
+      .get('/locations')
       .expect(200)
       .expect([])
       .end(done);
   });
 
-  it('POST /location should add a location', (done) => {
+  it('POST /locations should add a location', (done) => {
     const locationName = 'location 1';
     const hashtag = '#location';
     const email = 'location@location.com';
@@ -23,7 +23,7 @@ describe('Location', () => {
     const geoLongitude = 9.1707642;
 
     common.request(common.server)
-      .post('/location')
+      .post('/locations')
       .attach('frame', 'test/assets/sample-image.jpg')
       .attach('frameThanks', 'test/assets/sample-image.jpg')
       .attach('watermark', 'test/assets/watermark.png')
@@ -84,9 +84,9 @@ describe('Location', () => {
       });
   });
 
-  it('GET /location/:id should return the previously created location', (done) => {
+  it('GET /locations/:id should return the previously created location', (done) => {
     common.request(common.server)
-      .get(`/location/${common.location.id}`)
+      .get(`/locations/${common.location.id}`)
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -101,11 +101,11 @@ describe('Location', () => {
       });
   });
 
-  it('PUT /location/:id should edit the location', (done) => {
+  it('PUT /locations/:id should edit the location', (done) => {
     const locationName = 'location new name';
 
     common.request(common.server)
-      .put(`/location/${common.location.id}`)
+      .put(`/locations/${common.location.id}`)
       .send({
         name: locationName,
       })
@@ -126,9 +126,9 @@ describe('Location', () => {
       });
   });
 
-  it('PUT /device/:id should add the location to the device', (done) => {
+  it('PUT /devices/:id should add the location to the device', (done) => {
     common.request(common.server)
-      .put(`/device/${common.device.id}`)
+      .put(`/devices/${common.device.id}`)
       .send({
         locationId: common.location.id,
       })
@@ -152,9 +152,9 @@ describe('Location', () => {
       });
   });
 
-  it('DELETE /location/:id should return an error', (done) => {
+  it('DELETE /locations/:id should return an error', (done) => {
     common.request(common.server)
-      .delete(`/location/${common.location.id}`)
+      .delete(`/locations/${common.location.id}`)
       .expect(404)
       .end(done);
   });

@@ -7,9 +7,9 @@ const config = require('config');
 const common = require('../common');
 
 describe('Video', () => {
-  it('POST /video should upload the video', (done) => {
+  it('POST /videos should upload the video', (done) => {
     common.request(common.server)
-      .post('/video')
+      .post('/videos')
       .attach('video', 'test/assets/sample-video.mp4')
       .field('user[email]', common.email)
       .field('device[identifierForVendor]', common.deviceId)
@@ -61,27 +61,27 @@ describe('Video', () => {
       });
   });
 
-  it('POST /video should refuse without user', (done) => {
+  it('POST /videos should refuse without user', (done) => {
     common.request(common.server)
-      .post('/video')
+      .post('/videos')
       .attach('video', 'test/assets/sample-video.mp4')
       .field('device[identifierForVendor]', common.deviceId)
       .expect(500)
       .end(done);
   });
 
-  it('POST /video should refuse without device', (done) => {
+  it('POST /videos should refuse without device', (done) => {
     common.request(common.server)
-      .post('/video')
+      .post('/videos')
       .attach('video', 'test/assets/sample-video.mp4')
       .field('user[email]', common.email)
       .expect(500)
       .end(done);
   });
 
-  it('POST /video should refuse to upload the image', (done) => {
+  it('POST /videos should refuse to upload the image', (done) => {
     common.request(common.server)
-      .post('/video')
+      .post('/videos')
       .attach('video', 'test/assets/sample-image.jpg')
       .field('user[email]', common.email)
       .field('device[identifierForVendor]', common.deviceId)
@@ -89,9 +89,9 @@ describe('Video', () => {
       .end(done);
   });
 
-  it('GET /video should get the list of videos (max: 10)', (done) => {
+  it('GET /videos should get the list of videos (max: 10)', (done) => {
     common.request(common.server)
-      .get('/video')
+      .get('/videos')
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -106,22 +106,22 @@ describe('Video', () => {
       });
   });
 
-  it('GET /video?offset=1 should get no videos', (done) => {
+  it('GET /videos?offset=1 should get no videos', (done) => {
     common.request(common.server)
-      .get('/video?offset=1')
+      .get('/videos?offset=1')
       .expect(200)
       .expect([])
       .end(done);
   });
 
-  it('PUT /video/:id should return an error', (done) => {
+  it('PUT /videos/:id should return an error', (done) => {
     common.request(common.server)
-      .put(`/user/${common.video.id}`)
-      .expect(404)
+      .put(`/videos/${common.video.id}`)
+      .expect(403)
       .end(done);
   });
 
-  it('DELETE /video/:id should return an error', (done) => {
+  it('DELETE /videos/:id should return an error', (done) => {
     common.request(common.server)
       .delete(`/user/${common.video.id}`)
       .expect(404)

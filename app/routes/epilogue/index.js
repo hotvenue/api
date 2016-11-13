@@ -9,7 +9,7 @@ module.exports = function addRestRoutes(app) {
   Object.keys(models.sequelize.models).forEach((model) => {
     const resource = app.epilogue.resource({
       model: models.sequelize.models[model],
-      endpoints: [`/${model}`, `/${model}/:id`],
+      // endpoints: [`/${model}`, `/${model}/:id`],
       associations: true,
       actions: ['create', 'list', 'read', 'update'],
     });

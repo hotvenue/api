@@ -3,17 +3,17 @@
 const common = require('../common');
 
 describe('User', () => {
-  it('GET /user should return an empty list', (done) => {
+  it('GET /users should return an empty list', (done) => {
     common.request(common.server)
-      .get('/user')
+      .get('/users')
       .expect(200)
       .expect([])
       .end(done);
   });
 
-  it('POST /user should add a user', (done) => {
+  it('POST /users should add a user', (done) => {
     common.request(common.server)
-      .post('/user')
+      .post('/users')
       .send({
         email: common.email,
       })
@@ -39,9 +39,9 @@ describe('User', () => {
       });
   });
 
-  it('POST /user should not add the same user', (done) => {
+  it('POST /users should not add the same user', (done) => {
     common.request(common.server)
-      .post('/user')
+      .post('/users')
       .send({
         email: common.email,
       })
@@ -49,9 +49,9 @@ describe('User', () => {
       .end(done);
   });
 
-  it('GET /user/:id should return the previously created user', (done) => {
+  it('GET /users/:id should return the previously created user', (done) => {
     common.request(common.server)
-      .get(`/user/${common.user.id}`)
+      .get(`/users/${common.user.id}`)
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -66,11 +66,11 @@ describe('User', () => {
       });
   });
 
-  it('PUT /user/:id should edit the user', (done) => {
+  it('PUT /users/:id should edit the user', (done) => {
     const email = 'hello@gmail.com';
 
     common.request(common.server)
-      .put(`/user/${common.user.id}`)
+      .put(`/users/${common.user.id}`)
       .send({
         email,
       })
@@ -91,9 +91,9 @@ describe('User', () => {
       });
   });
 
-  it('DELETE /user/:id should return an error', (done) => {
+  it('DELETE /users/:id should return an error', (done) => {
     common.request(common.server)
-      .delete(`/user/${common.user.id}`)
+      .delete(`/users/${common.user.id}`)
       .expect(404)
       .end(done);
   });

@@ -3,17 +3,17 @@
 const common = require('../common');
 
 describe('Device', () => {
-  it('GET /device should return an empty list', (done) => {
+  it('GET /devices should return an empty list', (done) => {
     common.request(common.server)
-      .get('/device')
+      .get('/devices')
       .expect(200)
       .expect([])
       .end(done);
   });
 
-  it('POST /device should add a device', (done) => {
+  it('POST /devices should add a device', (done) => {
     common.request(common.server)
-      .post('/device')
+      .post('/devices')
       .send({
         identifierForVendor: common.deviceId,
       })
@@ -38,9 +38,9 @@ describe('Device', () => {
       });
   });
 
-  it('GET /device/:id should return the previously created device', (done) => {
+  it('GET /devices/:id should return the previously created device', (done) => {
     common.request(common.server)
-      .get(`/device/${common.device.id}`)
+      .get(`/devices/${common.device.id}`)
       .expect(200)
       .end((err, res) => {
         if (err) {
@@ -55,9 +55,9 @@ describe('Device', () => {
       });
   });
 
-  it('DELETE /device/:id should return an error', (done) => {
+  it('DELETE /devices/:id should return an error', (done) => {
     common.request(common.server)
-      .delete(`/device/${common.device.id}`)
+      .delete(`/devices/${common.device.id}`)
       .expect(404)
       .end(done);
   });

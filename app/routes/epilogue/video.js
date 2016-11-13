@@ -80,13 +80,4 @@ module.exports = {
       throw new ForbiddenError();
     },
   },
-
-  extraConfiguration(resource) {
-    const app = resource.app;
-
-    app.get(`${resource.endpoints.singular}/original`, (req, res) => {
-      console.log(Object.keys(req));
-      console.log(Object.keys(res));
-    });
-  },
 };
