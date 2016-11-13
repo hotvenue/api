@@ -28,8 +28,6 @@ dependencies:
   pre:
     - chmod +x things/circleci/pre-dependencies.sh
     - ./things/circleci/pre-dependencies.sh
-    - cat config/local.json
-    - cat config/production.json
   post:
     - npm install sqlite3
     - pip install awscli
