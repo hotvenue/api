@@ -7,8 +7,7 @@
     "max_restarts": 5,
     "max_memory_restart": "450M",
     "env": {
-      "NODE_ENV": "production",
-      "SPOTVENUE_SERVER": "appserver"
+      "NODE_ENV": "production"
     }
   }]
 }
