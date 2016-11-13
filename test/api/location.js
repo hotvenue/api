@@ -48,6 +48,8 @@ describe('Location', () => {
         common.expect(res.body).to.have.property('geoLongitude').and.equal(geoLongitude);
         common.expect(res.body).to.have.property('frame');
         common.expect(res.body).to.have.property('frameThanks');
+        common.expect(res.body).to.have.property('checkboxes')
+          .and.deep.equal(config.get('app').location.checkboxes.privateEvents);
         common.expect(res.body).to.have.property('createdAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')

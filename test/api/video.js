@@ -8,11 +8,17 @@ const common = require('../common');
 
 describe('Video', () => {
   it('POST /videos should upload the video', (done) => {
+    const privacy = {
+      save: true,
+      publish: false,
+    };
+
     common.request(common.server)
       .post('/videos')
       .attach('video', 'test/assets/sample-video.mp4')
       .field('user[email]', common.email)
       .field('device[identifierForVendor]', common.deviceId)
+      .field('privacy', JSON.stringify(privacy))
       .expect(201)
       .end((err, res) => {
         if (err) {
@@ -24,6 +30,7 @@ describe('Video', () => {
         common.expect(res.body).to.be.a('object');
         common.expect(res.body).to.have.property('id');
         common.expect(res.body).to.have.property('extension').and.equal('.mp4');
+        common.expect(res.body).to.have.property('privacy').and.deep.equal(privacy);
         common.expect(res.body).to.have.property('createdAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')
