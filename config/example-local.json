@@ -1,0 +1,21 @@
+{
+  "aws": {
+    "es": {
+      "endpoint": "<elastic search endpoint>"
+    },
+
+    "iam": {
+      "key": "<iam key>",
+      "secret": "<iam secret key>"
+    }
+  },
+
+  "jobs": {
+    "secret": "<random string>"
+  },
+
+  "telegram": {
+    "id": "<telegram bot id>",
+    "adminId": "<your telegram id>"
+  }
+}
