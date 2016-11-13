@@ -8,7 +8,7 @@ LOCAL_TEMPLATE='{
 
     "iam": {
       "key": "%s",
-      "secret": "%s",
+      "secret": "%s"
     }
   },
 
