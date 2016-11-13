@@ -26,6 +26,7 @@ machine:
 
 dependencies:
   pre:
+    - chmod +x things/circleci/pre-dependencies.sh
     - ./things/circleci/pre-dependencies.sh
   post:
     - npm install sqlite3
