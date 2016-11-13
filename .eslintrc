@@ -5,6 +5,6 @@
   },
   "plugins": [],
   "rules": {
-    "strict": ["error", "global"]
+    "strict": [2, "global"]
   }
 }
