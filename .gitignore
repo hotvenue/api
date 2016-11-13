@@ -5,6 +5,9 @@ data
 # Migration database
 umzug.json
 
+# Local config
+config/local*
+
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Node template
