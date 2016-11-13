@@ -7,13 +7,8 @@ const elasticsearch = require('elasticsearch');
 const awsConfig = config.get('aws');
 const esClient = elasticsearch.Client;
 
-let iam = 'webserver';
-if (process.env.NODE_ENV === 'test' || process.env.SPOTVENUE_SERVER === 'appserver') {
-  iam = 'appserver';
-}
-
-process.env.AWS_ACCESS_KEY_ID = awsConfig.iam[iam].key;
-process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam[iam].secret;
+process.env.AWS_ACCESS_KEY_ID = awsConfig.iam.key;
+process.env.AWS_SECRET_ACCESS_KEY = awsConfig.iam.secret;
 
 const aws = require('aws-sdk');
 
