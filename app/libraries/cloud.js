@@ -20,19 +20,19 @@ const cloud = module.exports = {
     hosts: awsConfig.es.endpoint,
     connectionClass: require('http-aws-es'), // eslint-disable-line global-require
     amazonES: {
-      region: awsConfig.es.region,
+      region: awsConfig.region,
       credentials: new aws.EnvironmentCredentials('AWS'),
     },
   }),
   s3: new aws.S3({
     params: {
       Bucket: awsConfig.s3.bucket,
-      region: awsConfig.s3.region,
+      region: awsConfig.region,
     },
     signatureVersion: 'v4',
   }),
   ses: new aws.SES({
-    region: awsConfig.ses.region,
+    region: awsConfig.region,
   }),
 
   /**

@@ -90,14 +90,11 @@ const config = {
   },
 
   aws: {
-    es: {
-      region: 'eu-west-1',
-    },
+    region: 'eu-west-1',
 
     s3: {
       bucket: 'hotvenue',
       link: 'https://s3-eu-west-1.amazonaws.com',
-      region: 'eu-west-1',
 
       folder: {
         video: {
@@ -114,10 +111,6 @@ const config = {
           tmpWatermark: 'app/location/tmp-watermark',
         },
       },
-    },
-
-    ses: {
-      region: 'eu-west-1',
     },
   },
 
