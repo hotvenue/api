@@ -19,6 +19,7 @@ describe('Video', () => {
       .field('user[email]', common.email)
       .field('device[identifierForVendor]', common.deviceId)
       .field('privacy', JSON.stringify(privacy))
+      .field('home', '1')
       .expect(201)
       .end((err, res) => {
         if (err) {
@@ -31,6 +32,7 @@ describe('Video', () => {
         common.expect(res.body).to.have.property('id');
         common.expect(res.body).to.have.property('extension').and.equal('.mp4');
         common.expect(res.body).to.have.property('privacy').and.deep.equal(privacy);
+        common.expect(res.body).to.have.property('home').and.equal(true);
         common.expect(res.body).to.have.property('createdAt')
           .and.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,3}Z/);
         common.expect(res.body).to.have.property('updatedAt')

@@ -100,6 +100,11 @@ module.exports = function createVideo(sequelize, DataTypes) {
       defaultValue: false,
     },
 
+    home: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+
     privacy: {
       type: DataTypes.STRING,
       defaultValue: '{"name":true,"publish":true}',
