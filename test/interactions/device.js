@@ -28,4 +28,21 @@ describe('Device', () => {
         done();
       });
   });
+
+  it('GET /location/:id/videos?scope=home should get the home videos of the location', (done) => {
+    common.request(common.server)
+      .get(`/locations/${common.location.id}/videos?scope=home`)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+
+          return;
+        }
+
+        common.expect(res.body).to.be.a('array').and.have.length(1);
+
+        done();
+      });
+  });
 });

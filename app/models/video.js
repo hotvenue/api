@@ -190,6 +190,14 @@ module.exports = function createVideo(sequelize, DataTypes) {
         video.belongsTo(models.location);
       },
     },
+
+    scopes: {
+      home: {
+        where: {
+          home: true,
+        },
+      },
+    },
   });
 
   return video;

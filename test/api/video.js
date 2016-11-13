@@ -115,6 +115,23 @@ describe('Video', () => {
       });
   });
 
+  it('GET /videos?scope=home should get the list of home videos (max: 10)', (done) => {
+    common.request(common.server)
+      .get('/videos?scope=home')
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          done(err);
+
+          return;
+        }
+
+        common.expect(res.body).to.be.a('array').and.have.length(1);
+
+        done();
+      });
+  });
+
   it('GET /videos?offset=1 should get no videos', (done) => {
     common.request(common.server)
       .get('/videos?offset=1')
