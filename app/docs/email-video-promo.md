@@ -1,4 +1,4 @@
-Grazie per utilizzato **HotVenue** all'inaugurazione di VIVANACHOS! Modena. 
+Grazie per aver utilizzato **HotVenue** all'inaugurazione di VIVANACHOS! Modena. 
 
 Continua a festeggiare e **condividi il video** con i tuoi amici: ${HASHTAG}$
 
