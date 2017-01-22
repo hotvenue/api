@@ -34,6 +34,9 @@ const cloud = module.exports = {
   ses: new aws.SES({
     region: awsConfig.region,
   }),
+  ec2: new aws.EC2({
+    region: awsConfig.region,
+  }),
 
   /**
    *

@@ -149,4 +149,29 @@ ${privacyText}
           .then(() => archive.finalize());
       });
   },
+
+  ec2List(req, res) {
+    cloud.ec2.describeInstances({}, (err, data) => {
+      if (err) {
+        throw new Error(err);
+      }
+
+      res.json(data);
+    });
+  },
+
+  ec2Launch(req, res) {
+    cloud.ec2.runInstances({
+      ImageId: 'ami-6f587e1c',
+      MinCount: 1,
+      MaxCount: 1,
+      InstanceType: 't2.micro',
+    }, (err, data) => {
+      if (err) {
+        throw new Error(err);
+      }
+
+      res.json(data);
+    });
+  },
 };
