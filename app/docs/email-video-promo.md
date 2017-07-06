@@ -1,12 +1,11 @@
-Grazie per aver utilizzato **HotVenue** all'inaugurazione di VIVANACHOS! Modena. 
+Thank you for using **HotVenue** at **${LOCATION}$**! Please find your video attached. 
 
-Continua a festeggiare e **condividi il video** con i tuoi amici: ${HASHTAG}$
-
-Puoi anche seguire tutte le novità di VIVANACHOS! su [Facebook](https://www.facebook.com/VivaNachosItalia/) e [Instagram](https://www.instagram.com/vivanachos/).
-
-A presto, 
-
-Il team di HotVenue
+**Share this great experience** using the hashtags: ${HASHTAG}$
 
 
-_Vuoi avere HotVenue al tuo prossimo evento? Scrivici: team@hotvenueapp.com_
+Ciao, 
+
+The HotVenue Team
+
+
+_What about HotVenue at your next event? Reach out: team@hotvenueapp.com_
