@@ -11,7 +11,7 @@ module.exports = function addRestRoutes(app) {
       model: models.sequelize.models[model],
       // endpoints: [`/${model}`, `/${model}/:id`],
       associations: true,
-      actions: ['create', 'list', 'read', 'update', 'delete'],
+      actions: ['create', 'list', 'read', 'update'],
     });
 
     const middlewareFilename = `${model}.js`;
